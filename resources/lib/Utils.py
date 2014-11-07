@@ -433,15 +433,12 @@ def CreateListItems(data):
     InfoLabels = ["genre", "year", "episode", "season", "top250", "tracknumber", "year", "plot", "tagline", "originaltitle", "tvshowtitle",
                   "director", "rating", "studio", "starrating", "country", "percentplayed", "audiochannels", "audiocodec", "videocodec", "videoaspect",
                   "mpaa", "genre", "premiered", "duration", "folder", "episode", "dbid", "plotoutline", "trailer", "top250", "writer", "watched", "videoresolution"]    # log(str(xbmcgui.getCurrentWindowId()))
-    # log(str(xbmcgui.getCurrentWindowDialogId()))
-    # log(str(controlwindow))
     itemlist = []
     if data is not None:
         for (count, result) in enumerate(data):
             listitem = xbmcgui.ListItem('%s' % (str(count)))
             itempath = ""
             for (key, value) in result.iteritems():
-           #     log("key: " + unicode(key) + "  value: " + unicode(value))
                 if str(key).lower() in ["name", "label", "title"]:
                     listitem.setLabel(unicode(value))
                 if str(key).lower() in ["thumb"]:
@@ -452,25 +449,7 @@ def CreateListItems(data):
                     listitem.setArt({str(key).lower(): unicode(value)})
                 if str(key).lower() in ["path"]:
                     itempath = unicode(value)
-                # if str(key).lower() in InfoLabels:
-                #     listitem.setInfo('video', {str(key).lower(): unicode(value)})
                 listitem.setProperty('%s' % (str(key)), unicode(value))
-           # itempath = "SetFocus(" + str((controlnumber + 1)) + ")"
             listitem.setPath(path=itempath)
-            listitem.setProperty("target_url", itempath)
-            listitem.setProperty("node:target_url", itempath)
-            listitem.setProperty("node.target_url", itempath)
             itemlist.append(listitem)
     return itemlist
-
-
-def cleanText(text):
-    import re
-    text = re.sub('<br \/>', '[CR]', text)
-    text = re.sub('<(.|\n|\r)*?>', '', text)
-    text = re.sub('&quot;', '"', text)
-    text = re.sub('&amp;', '&', text)
-    text = re.sub('&gt;', '>', text)
-    text = re.sub('&lt;', '<', text)
-    text = re.sub('User-contributed text is available under the Creative Commons By-SA License and may also be available under the GNU FDL.', '', text)
-    return text.strip()
