@@ -30,22 +30,6 @@ class Main:
         self._parse_argv()
         if self.infos:
             self._StartInfoActions()
-  #       elif self.exportsettings:
-  #           export_skinsettings()
-  #       elif self.importsettings:
-  #           import_skinsettings()
-  #       elif self.importextrathumb:
-  #           AddArtToLibrary("extrathumb", "Movie", "extrathumbs", extrathumb_limit, True)
-  #       elif self.importextrafanart:
-  #           AddArtToLibrary("extrafanart", "Movie", "extrafanart", extrafanart_limit, True)
-  #  #     elif self.importextrathumbtv:
-  # #          AddArtToLibrary("extrathumb","TVShow","extrathumbs")
-  #       elif self.importextrafanarttv:
-  #           AddArtToLibrary("extrafanart", "TVShow", "extrafanart", extrafanart_limit, True)
-  #       elif self.importallartwork:
-  #           AddArtToLibrary("extrathumb", "Movie", "extrathumbs", extrathumb_limit, True)
-  #           AddArtToLibrary("extrafanart", "Movie", "extrafanart", extrafanart_limit, True)
-  #           AddArtToLibrary("extrafanart", "TVShow", "extrafanart", extrafanart_limit, True)
         elif not len(sys.argv) > 1:
             self._selection_dialog()
         if self.control == "plugin":
