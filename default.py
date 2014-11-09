@@ -35,6 +35,15 @@ class Main:
         if self.control == "plugin":
             xbmcplugin.endOfDirectory(self.handle)
         xbmc.executebuiltin('ClearProperty(toolbox_running,home)')
+        while self.daemon and not xbmc.abortRequested:
+            xbmc.sleep(500)
+            self.image_now = xbmc.getInfoLabel("Player.Art(thumb)")
+            if self.image_now != self.image_prev:
+                self.image_prev = self.image_now
+                homewindow.clearProperty('ImageFilter')
+                Notify("test", "test")
+                image = Filter_Image(self.id, self.radius)
+                homewindow.setProperty('ImageFilter', image)
 
     def _StartInfoActions(self):
         for info in self.infos:
@@ -93,7 +102,11 @@ class Main:
         self.sound = True
         self.time = 5000
         self.radius = 5
+        self.daemon = False
+        self.image_now = ""
+        self.image_prev = ""
         self.autoclose = ""
+        self.Monitor = ToolBoxMonitor(self)
 
     def _parse_argv(self):
         args = sys.argv
@@ -105,6 +118,8 @@ class Main:
                 self.infos.append(arg[5:])
             elif arg.startswith('id='):
                 self.id = arg[3:]
+            elif arg.startswith('daemon='):
+                self.daemon = True
             elif arg.startswith('header='):
                 self.header = arg[7:]
             elif arg.startswith('text='):
@@ -169,6 +184,18 @@ class Main:
             AddArtToLibrary("extrafanart", "Movie", "extrafanart", extrafanart_limit)
             AddArtToLibrary("extrafanart", "TVShow", "extrafanart", extrafanart_limit)
 
+
+class ToolBoxMonitor(xbmc.Monitor):
+
+    def __init__(self, *args, **kwargs):
+        xbmc.Monitor.__init__(self)
+
+
+    def onPlayBackStarted(self):
+        homewindow.clearProperty('ImageFilter')
+        Notify("test", "test")
+        image = Filter_Image(self.id, self.radius)
+        homewindow.setProperty('ImageFilter', image)
 
 if (__name__ == "__main__"):
     Main()
