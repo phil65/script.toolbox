@@ -40,7 +40,6 @@ class Main:
         for info in self.infos:
             if info == 'channels':
                 channels = create_channel_list()
-                prettyprint(channels)
             elif info == 'favourites':
                 if self.id:
                     favourites = GetFavouriteswithType(self.id)
@@ -76,7 +75,7 @@ class Main:
                 JumpToLetter(self.id)
             elif info == 'blur':
                 homewindow.clearProperty('ImageFilter')
-                image = Filter_Image(self.id)
+                image = Filter_Image(self.id, self.radius)
                 homewindow.setProperty('ImageFilter', image)
 
     def _init_vars(self):
@@ -93,6 +92,7 @@ class Main:
         self.icon = ""
         self.sound = True
         self.time = 5000
+        self.radius = 5
         self.autoclose = ""
 
     def _parse_argv(self):
@@ -119,6 +119,8 @@ class Main:
                 self.noaction = arg[9:]
             elif arg.startswith('icon='):
                 self.icon = arg[5:]
+            elif arg.startswith('radius='):
+                self.radius = int(arg[7:])
             elif arg.startswith('sound='):
                 if "false" in arg or "False" in arg:
                     self.sound = False

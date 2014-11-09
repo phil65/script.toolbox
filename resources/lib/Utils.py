@@ -6,8 +6,9 @@ import xbmcplugin
 import os
 import simplejson
 import shutil
-from PIL import Image, ImageFilter, ImageGrab
+from PIL import Image, ImageFilter, ImageGrab, ImageOps
 import hashlib
+import time
 
 __addon__ = xbmcaddon.Addon()
 __addonid__ = __addon__.getAddonInfo('id')
@@ -74,11 +75,11 @@ def import_skinsettings():
         log("backup not found")
 
 
-def Filter_Image(filterimage):
+def Filter_Image(filterimage, radius):
     if not xbmcvfs.exists(Addon_Data_Path):
         xbmcvfs.mkdir(Addon_Data_Path)
     md5 = hashlib.md5(filterimage).hexdigest()
-    targetfile = os.path.join(Addon_Data_Path, "%s.png" % md5)
+    targetfile = os.path.join(Addon_Data_Path, "%s%i.png" % (md5, time.time()))
    # cachefile = xbmc.getCacheThumbName(targetfile)
  #   find_cached_file(cachefile)
     # if not xbmcvfs.exists(targetfile):
@@ -89,10 +90,21 @@ def Filter_Image(filterimage):
         img = Image.open(targetfile)
     else:
         img = ImageGrab.grab()
-    imgfilter = ImageFilter.BLUR
+#    recolorized = image_recolorize(im, black="#000066", white="#9999CC")
+    imgfilter = MyGaussianBlur(radius=radius)
     img = img.filter(imgfilter)
     img.save(targetfile)
     return targetfile
+
+def image_recolorize(src, black="#000099", white="#99CCFF"):
+    """
+    Returns a recolorized version of the initial image using a two-tone
+    approach. The color in the black argument is used to replace black pixels
+    and the color in the white argument is used to replace white pixels.
+
+    The defaults set the image to a blue hued image.
+    """
+    return ImageOps.colorize(ImageOps.grayscale(src), black, white)
 
 
 def find_cached_file(url):
@@ -457,3 +469,12 @@ def CreateListItems(data):
             listitem.setPath(path=itempath)
             itemlist.append(listitem)
     return itemlist
+
+class MyGaussianBlur(ImageFilter.Filter):
+    name = "GaussianBlur"
+
+    def __init__(self, radius=2):
+        self.radius = radius
+
+    def filter(self, image):
+        return image.gaussian_blur(self.radius)
