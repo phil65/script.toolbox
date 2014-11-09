@@ -92,11 +92,35 @@ def Filter_Image(filterimage, radius):
         img = ImageGrab.grab()
     else:
         return ""
-  #  img = image_recolorize(img, black="#000066", white="#9999CC")
+    width, height = img.size
+    pixels = img.load()
+    data = []
+    for x in range(width/4):
+        for y in range(height/4):
+            cpixel = pixels[x*4, y*4]
+            data.append(cpixel)
+    r = 0
+    g = 0
+    b = 0
+    counter = 0
+    for x in range(len(data)):
+        if (data[x][0] + data[x][1] + data[x][2]) > 255:
+            r += data[x][0]
+            g += data[x][1]
+            b += data[x][2]
+            counter += 1
+    rAvg = hex(int(r/counter))[2:]
+    gAvg = hex(int(g/counter))[2:]
+    bAvg = hex(int(b/counter))[2:]
+    imagecolor = "FF%s%s%s" % (rAvg, gAvg, bAvg)
+    log("ToolBox ImageColor:" + imagecolor)
+ #   img = image_recolorize(img, black="#000066", white="#9999CC")
     imgfilter = MyGaussianBlur(radius=radius)
     img = img.filter(imgfilter)
     img.save(targetfile)
+    homewindow.setProperty("ImageColor", imagecolor)
     return targetfile
+
 
 def image_recolorize(src, black="#000099", white="#99CCFF"):
     """
