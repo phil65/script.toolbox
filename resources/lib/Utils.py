@@ -7,6 +7,7 @@ import os
 import simplejson
 import shutil
 from PIL import Image, ImageFilter, ImageGrab
+import hashlib
 
 __addon__ = xbmcaddon.Addon()
 __addonid__ = __addon__.getAddonInfo('id')
@@ -76,15 +77,18 @@ def import_skinsettings():
 def Filter_Image(filterimage):
     if not xbmcvfs.exists(Addon_Data_Path):
         xbmcvfs.mkdir(Addon_Data_Path)
-    targetfile = os.path.join(Addon_Data_Path, "test.png")
-    cachefile = xbmc.getCacheThumbName(targetfile)
-    find_cached_file(cachefile)
+    md5 = hashlib.md5(filterimage).hexdigest()
+    targetfile = os.path.join(Addon_Data_Path, "%s.png" % md5)
+   # cachefile = xbmc.getCacheThumbName(targetfile)
+ #   find_cached_file(cachefile)
     # if not xbmcvfs.exists(targetfile):
     imagefile = xbmcvfs.File(targetfile, "w")
     imagefile.close()
-   # shutil.copy(filterimage, targetfile)
- #   img = Image.open(targetfile)
-    img = ImageGrab.grab()
+    if filterimage:
+        xbmcvfs.copy(filterimage, targetfile)
+        img = Image.open(targetfile)
+    else:
+        img = ImageGrab.grab()
     imgfilter = ImageFilter.BLUR
     img = img.filter(imgfilter)
     img.save(targetfile)
