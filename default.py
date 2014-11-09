@@ -40,9 +40,7 @@ class Main:
             self.image_now = xbmc.getInfoLabel("Player.Art(thumb)")
             if self.image_now != self.image_prev:
                 self.image_prev = self.image_now
-                homewindow.clearProperty('ImageFilter')
-                Notify("test", "test")
-                image = Filter_Image(self.id, self.radius)
+                image = Filter_Image(self.image_now, self.radius)
                 homewindow.setProperty('ImageFilter', image)
 
     def _StartInfoActions(self):
