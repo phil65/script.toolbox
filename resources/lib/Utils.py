@@ -85,12 +85,14 @@ def Filter_Image(filterimage, radius):
     # if not xbmcvfs.exists(targetfile):
     imagefile = xbmcvfs.File(targetfile, "w")
     imagefile.close()
-    if filterimage:
+    if filterimage != "" and xbmcvfs.exists(filterimage):
         xbmcvfs.copy(filterimage, targetfile)
         img = Image.open(targetfile)
-    else:
+    elif filterimage == "screenshot":
         img = ImageGrab.grab()
-#    recolorized = image_recolorize(im, black="#000066", white="#9999CC")
+    else:
+        return ""
+  #  img = image_recolorize(img, black="#000066", white="#9999CC")
     imgfilter = MyGaussianBlur(radius=radius)
     img = img.filter(imgfilter)
     img.save(targetfile)
