@@ -79,17 +79,23 @@ def Filter_Image(filterimage, radius):
     if not xbmcvfs.exists(Addon_Data_Path):
         xbmcvfs.mkdir(Addon_Data_Path)
     md5 = hashlib.md5(filterimage).hexdigest()
-    targetfile = os.path.join(Addon_Data_Path, "%s%i.png" % (md5, time.time()))
+    filename = md5 + str(radius) + ".png"
+    targetfile = os.path.join(Addon_Data_Path, filename)
    # cachefile = xbmc.getCacheThumbName(targetfile)
  #   find_cached_file(cachefile)
     # if not xbmcvfs.exists(targetfile):
-    imagefile = xbmcvfs.File(targetfile, "w")
-    imagefile.close()
-    if filterimage != "" and xbmcvfs.exists(filterimage):
-        xbmcvfs.copy(filterimage, targetfile)
-        img = Image.open(targetfile)
-    elif filterimage == "screenshot":
+    #     imagefile = xbmcvfs.File(targetfile, "w")
+    #     imagefile.close()
+    if filterimage == "screenshot":
         img = ImageGrab.grab()
+    elif filterimage == "":
+        return ""
+    elif xbmcvfs.exists(filterimage):
+        if xbmcvfs.exists(targetfile):
+            img = Image.open(targetfile)
+        else:
+            xbmcvfs.copy(filterimage, targetfile)
+            img = Image.open(targetfile)
     else:
         return ""
     width, height = img.size
@@ -109,12 +115,15 @@ def Filter_Image(filterimage, radius):
             g += data[x][1]
             b += data[x][2]
             counter += 1
-    rAvg = hex(int(r/counter))[2:]
-    gAvg = hex(int(g/counter))[2:]
-    bAvg = hex(int(b/counter))[2:]
-    imagecolor = "FF%s%s%s" % (rAvg, gAvg, bAvg)
+    if counter > 0:
+        rAvg = hex(int(r/counter))[2:]
+        gAvg = hex(int(g/counter))[2:]
+        bAvg = hex(int(b/counter))[2:]
+        imagecolor = "FF%s%s%s" % (rAvg, gAvg, bAvg)
+    else:
+        imagecolor = "FFF0F0F0"
     log("ToolBox ImageColor:" + imagecolor)
- #   img = image_recolorize(img, black="#000066", white="#9999CC")
+ #   img = image_recolorize(img, black="#000000", white="#FFFFFF")
     imgfilter = MyGaussianBlur(radius=radius)
     img = img.filter(imgfilter)
     img.save(targetfile)
