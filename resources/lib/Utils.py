@@ -6,7 +6,7 @@ import xbmcplugin
 import os
 import simplejson
 import shutil
-from PIL import Image, ImageFilter, ImageGrab, ImageOps
+from PIL import Image, ImageFilter, ImageOps
 import hashlib
 import time
 
@@ -86,9 +86,9 @@ def Filter_Image(filterimage, radius):
     # if not xbmcvfs.exists(targetfile):
     #     imagefile = xbmcvfs.File(targetfile, "w")
     #     imagefile.close()
-    if filterimage == "screenshot":
-        img = ImageGrab.grab()
-    elif filterimage == "":
+    # if filterimage == "screenshot":
+    #     img = ImageGrab.grab()
+    if filterimage == "":
         return ""
     elif xbmcvfs.exists(filterimage):
         if xbmcvfs.exists(targetfile):
