@@ -17,6 +17,29 @@ Addon_Data_Path = os.path.join(xbmc.translatePath("special://profile/addon_data/
 homewindow = xbmcgui.Window(10000)
 
 
+class TextViewer_Dialog(xbmcgui.WindowXMLDialog):
+    ACTION_PREVIOUS_MENU = [9, 92, 10]
+
+    def __init__(self, *args, **kwargs):
+        xbmcgui.WindowXMLDialog.__init__(self)
+        self.text = kwargs.get('text')
+        self.header = kwargs.get('header')
+
+    def onInit(self):
+        self.getControl(1).setLabel(self.header)
+        self.getControl(5).setText(self.text)
+
+    def onAction(self, action):
+        if action in self.ACTION_PREVIOUS_MENU:
+            self.close()
+
+    def onClick(self, controlID):
+        pass
+
+    def onFocus(self, controlID):
+        pass
+
+
 def AddArtToLibrary(type, media, folder, limit, silent=False):
     json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.Get%ss", "params": {"properties": ["art", "file"], "sort": { "method": "label" } }, "id": 1}' % media.lower())
     json_query = unicode(json_query, 'utf-8', errors='ignore')
@@ -110,16 +133,24 @@ def Filter_Image(filterimage, radius):
     b = 0
     counter = 0
     for x in range(len(data)):
-        if (data[x][0] + data[x][1] + data[x][2]) > 255:
+        if (data[x][0] + data[x][1] + data[x][2]) > 150:
             r += data[x][0]
             g += data[x][1]
             b += data[x][2]
             counter += 1
     if counter > 0:
-        rAvg = hex(int(r/counter))[2:]
-        gAvg = hex(int(g/counter))[2:]
-        bAvg = hex(int(b/counter))[2:]
-        imagecolor = "FF%s%s%s" % (rAvg, gAvg, bAvg)
+        rAvg = int(r/counter)
+        gAvg = int(g/counter)
+        bAvg = int(b/counter)
+        Avg = (rAvg + gAvg + bAvg) / 3
+        minBrightness = 100
+        if Avg < minBrightness:
+            Diff = minBrightness - Avg
+            rAvg += Diff
+            gAvg += Diff
+            bAvg += Diff
+
+        imagecolor = "FF%s%s%s" % (hex(rAvg)[2:], hex(gAvg)[2:], hex(bAvg)[2:])
     else:
         imagecolor = "FFF0F0F0"
     log("ToolBox ImageColor:" + imagecolor)

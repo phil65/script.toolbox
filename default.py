@@ -12,6 +12,7 @@ __addonversion__ = __addon__.getAddonInfo('version')
 __language__ = __addon__.getLocalizedString
 __cwd__ = __addon__.getAddonInfo('path').decode("utf-8")
 __resource__ = xbmc.translatePath(os.path.join(__cwd__, 'resources', 'lib')).decode("utf-8")
+__addonpath__ = __addon__.getAddonInfo('path')
 sys.path.append(__resource__)
 
 from Utils import *
@@ -66,6 +67,9 @@ class Main:
                 CreateDialogYesNo(self.header, self.text, self.nolabel, self.yeslabel, self.noaction, self.yesaction)
             elif info == 'notification':
                 CreateNotification(self.header, self.text, self.icon, self.time, self.sound)
+            elif info == 'textviewer':
+                w = TextViewer_Dialog('DialogTextViewer.xml', __addonpath__, header=self.header, text=self.text)
+                w.doModal()
             elif info == "sortletters":
                 listitems = GetSortLetters(self.path, self.id)
                 passDataToSkin('SortLetters', listitems, self.prop_prefix, self.window, self.control, self.handle)
@@ -82,6 +86,7 @@ class Main:
                 JumpToLetter(self.id)
             elif info == 'blur':
                 homewindow.clearProperty('ImageFilter')
+                log("Blur image %s with radius %i" % (self.id, self.radius))
                 image = Filter_Image(self.id, self.radius)
                 homewindow.setProperty('ImageFilter', image)
 
