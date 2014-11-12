@@ -148,10 +148,16 @@ def Filter_Image(filterimage, radius):
             Diff = minBrightness - Avg
             if rAvg <= (255 - Diff):
                 rAvg += Diff
+            else:
+                rAvg = 255
             if gAvg <= (255 - Diff):
                 gAvg += Diff
+            else:
+                gAvg = 255
             if bAvg <= (255 - Diff):
                 bAvg += Diff
+            else:
+                bAvg = 255
 
         imagecolor = "FF%s%s%s" % (hex(rAvg)[2:], hex(gAvg)[2:], hex(bAvg)[2:])
     else:
