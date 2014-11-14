@@ -10,6 +10,7 @@ import hashlib
 import time
 try:
     from PIL import Image, ImageFilter, ImageOps
+    from ImageOperations import MyGaussianBlur
 except:
     pass
 
@@ -549,12 +550,3 @@ def CreateListItems(data):
             listitem.setPath(path=itempath)
             itemlist.append(listitem)
     return itemlist
-
-class MyGaussianBlur(ImageFilter.Filter):
-    name = "GaussianBlur"
-
-    def __init__(self, radius=2):
-        self.radius = radius
-
-    def filter(self, image):
-        return image.gaussian_blur(self.radius)
