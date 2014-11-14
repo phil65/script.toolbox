@@ -6,9 +6,13 @@ import xbmcplugin
 import os
 import simplejson
 import shutil
-from PIL import Image, ImageFilter, ImageOps
 import hashlib
 import time
+try:
+    from PIL import Image, ImageFilter, ImageOps
+except:
+    log("No PIL available")
+
 
 __addon__ = xbmcaddon.Addon()
 __addonid__ = __addon__.getAddonInfo('id')
@@ -133,7 +137,8 @@ def Filter_Image(filterimage, radius):
     b = 0
     counter = 0
     for x in range(len(data)):
-        if (data[x][0] + data[x][1] + data[x][2]) > 150:
+        brightness = data[x][0] + data[x][1] + data[x][2]
+        if brightness > 150 and brightness < 720:
             r += data[x][0]
             g += data[x][1]
             b += data[x][2]
