@@ -11,7 +11,7 @@ import time
 try:
     from PIL import Image, ImageFilter, ImageOps
 except:
-    log("No PIL available")
+    pass
 
 
 __addon__ = xbmcaddon.Addon()
