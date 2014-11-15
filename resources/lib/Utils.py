@@ -202,9 +202,10 @@ def save_to_file(content, filename, path=""):
     else:
         if not xbmcvfs.exists(path):
             xbmcvfs.mkdir(path)
-    imagefile = os.path.join(path, filename + ".txt")
-    log("save to textfile: " + imagefile)
-    text_file = xbmcvfs.File(imagefile, "w")
+        text_file_path = os.path.join(path, filename + ".txt")
+    log("save to textfile: " + text_file_path)
+    text_file = xbmcvfs.File(text_file_path, "w")
+    simplejson.dump(content, text_file)
     text_file.close()
     return True
 
@@ -255,9 +256,7 @@ def JumpToLetter(letter):
 
 def export_skinsettings():
     from xml.dom.minidom import parse
-    # Set path
     guisettings_path = xbmc.translatePath('special://profile/guisettings.xml').decode("utf-8")
-    # Check to see if file exists
     if xbmcvfs.exists(guisettings_path):
         log("guisettings.xml found")
         doc = parse(guisettings_path)
