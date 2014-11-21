@@ -316,12 +316,13 @@ def CreateDialogSelect(header):
         label = xbmc.getInfoLabel("Window.Property(Dialog.%i.Label)" % (i))
         if label == "":
             break
-        selectionlist.append(label)
+        if label != "-":
+            selectionlist.append(label)
     if selectionlist:
         select_dialog = xbmcgui.Dialog()
         index = select_dialog.select(header, selectionlist)
         value = xbmc.getInfoLabel("Window.Property(Dialog.%i.Builtin)" % (index + 1))
-        for builtin in value.split("|"):
+        for builtin in value.split("||"):
             xbmc.executebuiltin(builtin)
     for i in range(1, 50):
         xbmc.executebuiltin("ClearProperty(Dialog.%i.Builtin)" % (i))
