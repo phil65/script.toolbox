@@ -103,6 +103,7 @@ class Main:
         self.nolabel = ""
         self.noaction = ""
         self.icon = ""
+        self.prefix = ""
         self.sound = True
         self.time = 5000
         self.radius = 5
@@ -124,6 +125,8 @@ class Main:
                 self.id = arg[3:]
             elif arg.startswith('daemon='):
                 self.daemon = True
+            elif arg.startswith('prefix='):
+                self.prefix = arg[7:]
             elif arg.startswith('header='):
                 self.header = arg[7:]
             elif arg.startswith('text='):
