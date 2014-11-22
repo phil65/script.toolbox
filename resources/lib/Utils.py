@@ -159,7 +159,7 @@ def Filter_Image(filterimage, radius):
         gAvg = int(g/counter)
         bAvg = int(b/counter)
         Avg = (rAvg + gAvg + bAvg) / 3
-        minBrightness = 120
+        minBrightness = 130
         if Avg < minBrightness:
             Diff = minBrightness - Avg
             if rAvg <= (255 - Diff):
