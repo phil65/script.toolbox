@@ -126,12 +126,13 @@ def Filter_Image(filterimage, radius):
             img = Image.open(targetfile)
     else:
         return ""
+    img.thumbnail((200,200), Image.ANTIALIAS)
     width, height = img.size
     pixels = img.load()
     data = []
-    for x in range(width/4):
-        for y in range(height/4):
-            cpixel = pixels[x*4, y*4]
+    for x in range(width/2):
+        for y in range(height/2):
+            cpixel = pixels[x*2, y*2]
             data.append(cpixel)
     r = 0
     g = 0
@@ -164,8 +165,7 @@ def Filter_Image(filterimage, radius):
                 bAvg += Diff
             else:
                 bAvg = 255
-
-        imagecolor = "FF%s%s%s" % (hex(rAvg)[2:], hex(gAvg)[2:], hex(bAvg)[2:])
+        imagecolor = "FF%s%s%s" % (format(rAvg, '02x'), format(gAvg, '02x'), format(bAvg, '02x'))
     else:
         imagecolor = "FFF0F0F0"
     log("ToolBox ImageColor:" + imagecolor)
