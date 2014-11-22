@@ -168,16 +168,15 @@ def Filter_Image(filterimage, radius):
         imagecolor = "FF%s%s%s" % (format(rAvg, '02x'), format(gAvg, '02x'), format(bAvg, '02x'))
     else:
         imagecolor = "FFF0F0F0"
-    log("ToolBox ImageColor:" + imagecolor)
- #   img = image_recolorize(img, black="#000000", white="#FFFFFF")
+
     imgfilter = MyGaussianBlur(radius=radius)
     img = img.filter(imgfilter)
     img.save(targetfile)
-    homewindow.setProperty("ImageColor", imagecolor)
-    return targetfile
+    return targetfile, imagecolor
 
 
 def image_recolorize(src, black="#000099", white="#99CCFF"):
+ #   img = image_recolorize(img, black="#000000", white="#FFFFFF")
     """
     Returns a recolorized version of the initial image using a two-tone
     approach. The color in the black argument is used to replace black pixels

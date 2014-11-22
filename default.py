@@ -40,8 +40,9 @@ class Main:
             self.image_now = xbmc.getInfoLabel("Player.Art(thumb)")
             if self.image_now != self.image_prev:
                 self.image_prev = self.image_now
-                image = Filter_Image(self.image_now, self.radius)
-                homewindow.setProperty('ImageFilter', image)
+                image, imagecolor = Filter_Image(self.image_now, self.radius)
+                homewindow.setProperty(self.prefix + 'ImageFilter', image)
+                homewindow.setProperty(self.prefix + "ImageColor", imagecolor)
             else:
                 xbmc.sleep(300)
 
@@ -86,10 +87,11 @@ class Main:
             elif info == 'jumptoletter':
                 JumpToLetter(self.id)
             elif info == 'blur':
-                homewindow.clearProperty('ImageFilter')
+                homewindow.clearProperty(self.prefix + 'ImageFilter')
                 log("Blur image %s with radius %i" % (self.id, self.radius))
-                image = Filter_Image(self.id, self.radius)
-                homewindow.setProperty('ImageFilter', image)
+                image, imagecolor = Filter_Image(self.id, self.radius)
+                homewindow.setProperty(self.prefix + 'ImageFilter', image)
+                homewindow.setProperty(self.prefix + "ImageColor", imagecolor)
 
     def _init_vars(self):
         self.window = xbmcgui.Window(10000)  # Home Window
@@ -126,7 +128,7 @@ class Main:
             elif arg.startswith('daemon='):
                 self.daemon = True
             elif arg.startswith('prefix='):
-                self.prefix = arg[7:]
+                self.prefix = arg[7:] + "."
             elif arg.startswith('header='):
                 self.header = arg[7:]
             elif arg.startswith('text='):
@@ -199,10 +201,12 @@ class ToolBoxMonitor(xbmc.Monitor):
 
 
     def onPlayBackStarted(self):
-        homewindow.clearProperty('ImageFilter')
+        homewindow.clearProperty(self.prefix + 'ImageFilter')
         Notify("test", "test")
-        image = Filter_Image(self.id, self.radius)
-        homewindow.setProperty('ImageFilter', image)
+        image, imagecolor = Filter_Image(self.id, self.radius)
+        homewindow.setProperty(self.prefix + 'ImageFilter', image)
+        homewindow.setProperty(self.prefix + "ImageColor", imagecolor)
+
 
 if (__name__ == "__main__"):
     Main()
