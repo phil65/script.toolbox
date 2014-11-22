@@ -45,6 +45,14 @@ class TextViewer_Dialog(xbmcgui.WindowXMLDialog):
         pass
 
 
+def RemoveQuotes(label):
+    if label.startswith("'") and label.endswith("'") and len(label) > 2:
+        label = label[1:-1]
+        if label.startswith('"') and label.endswith('"') and len(label) > 2:
+            label = label[1:-1]
+    return label
+
+
 def AddArtToLibrary(type, media, folder, limit, silent=False):
     json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.Get%ss", "params": {"properties": ["art", "file"], "sort": { "method": "label" } }, "id": 1}' % media.lower())
     json_query = unicode(json_query, 'utf-8', errors='ignore')
@@ -117,7 +125,7 @@ def Filter_Image(filterimage, radius):
     # if filterimage == "screenshot":
     #     img = ImageGrab.grab()
     if filterimage == "":
-        return ""
+        return "", ""
     elif xbmcvfs.exists(filterimage):
         if xbmcvfs.exists(targetfile):
             img = Image.open(targetfile)
@@ -125,7 +133,8 @@ def Filter_Image(filterimage, radius):
             xbmcvfs.copy(filterimage, targetfile)
             img = Image.open(targetfile)
     else:
-        return ""
+        log("image does not exist. Path: " + filterimage)
+        return "", ""
     img.thumbnail((200,200), Image.ANTIALIAS)
     width, height = img.size
     pixels = img.load()

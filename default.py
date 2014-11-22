@@ -124,7 +124,7 @@ class Main:
             elif arg.startswith('info='):
                 self.infos.append(arg[5:])
             elif arg.startswith('id='):
-                self.id = arg[3:]
+                self.id = RemoveQuotes(arg[3:])
             elif arg.startswith('daemon='):
                 self.daemon = True
             elif arg.startswith('prefix='):
