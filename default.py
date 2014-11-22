@@ -37,12 +37,13 @@ class Main:
             xbmcplugin.endOfDirectory(self.handle)
         xbmc.executebuiltin('ClearProperty(toolbox_running,home)')
         while self.daemon and not xbmc.abortRequested:
-            xbmc.sleep(500)
             self.image_now = xbmc.getInfoLabel("Player.Art(thumb)")
             if self.image_now != self.image_prev:
                 self.image_prev = self.image_now
                 image = Filter_Image(self.image_now, self.radius)
                 homewindow.setProperty('ImageFilter', image)
+            else:
+                xbmc.sleep(300)
 
     def _StartInfoActions(self):
         for info in self.infos:
@@ -109,7 +110,7 @@ class Main:
         self.image_now = ""
         self.image_prev = ""
         self.autoclose = ""
-        self.Monitor = ToolBoxMonitor(self)
+     #   self.Monitor = ToolBoxMonitor(self)
 
     def _parse_argv(self):
         args = sys.argv
