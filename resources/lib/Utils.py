@@ -177,7 +177,7 @@ def Filter_Image(filterimage, radius):
         imagecolor = "FF%s%s%s" % (format(rAvg, '02x'), format(gAvg, '02x'), format(bAvg, '02x'))
     else:
         imagecolor = "FFF0F0F0"
-
+    log("Average Color: " + imagecolor)
     imgfilter = MyGaussianBlur(radius=radius)
     img = img.filter(imgfilter)
     img.save(targetfile)

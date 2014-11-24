@@ -17,6 +17,8 @@ sys.path.append(__resource__)
 
 from Utils import *
 
+extrafanart_limit = 4
+extrathumb_limit = 4
 homewindow = xbmcgui.Window(10000)
 Addon_Data_Path = os.path.join(xbmc.translatePath("special://profile/addon_data/%s" % __addonid__).decode("utf-8"))
 Skin_Data_Path = os.path.join(xbmc.translatePath("special://profile/addon_data/%s" % xbmc.getSkinDir()).decode("utf-8"))
@@ -58,7 +60,7 @@ class Main:
                     homewindow.setProperty('favourite.count', str(len(favourites)))
                     if len(favourites) > 0:
                         homewindow.setProperty('favourite.1.name', favourites[-1]["Label"])
-                passDataToSkin('Favourites', favourites, self.prop_prefix, self.window, self.control, self.handle)
+                passDataToSkin('Favourites', favourites, self.prefix, self.window, self.control, self.handle)
             elif info == 'playliststats':
                 GetPlaylistStats(self.id)
             elif info == 'selectdialog':
@@ -74,7 +76,7 @@ class Main:
                 w.doModal()
             elif info == "sortletters":
                 listitems = GetSortLetters(self.path, self.id)
-                passDataToSkin('SortLetters', listitems, self.prop_prefix, self.window, self.control, self.handle)
+                passDataToSkin('SortLetters', listitems, self.prefix, self.window, self.control, self.handle)
             # elif info == 'slideshow':
             #     windowid = xbmcgui.getCurrentWindowId()
             #     Window = xbmcgui.Window(windowid)
@@ -128,7 +130,9 @@ class Main:
             elif arg.startswith('daemon='):
                 self.daemon = True
             elif arg.startswith('prefix='):
-                self.prefix = arg[7:] + "."
+                self.prefix = arg[7:]
+                if not self.prefix.endswith("."):
+                    self.prefix = self.prefix + "."
             elif arg.startswith('header='):
                 self.header = arg[7:]
             elif arg.startswith('text='):
@@ -201,11 +205,12 @@ class ToolBoxMonitor(xbmc.Monitor):
 
 
     def onPlayBackStarted(self):
-        homewindow.clearProperty(self.prefix + 'ImageFilter')
-        Notify("test", "test")
-        image, imagecolor = Filter_Image(self.id, self.radius)
-        homewindow.setProperty(self.prefix + 'ImageFilter', image)
-        homewindow.setProperty(self.prefix + "ImageColor", imagecolor)
+        pass
+   #     homewindow.clearProperty(self.prefix + 'ImageFilter')
+   #     Notify("test", "test")
+        # image, imagecolor = Filter_Image(self.id, self.radius)
+        # homewindow.setProperty(self.prefix + 'ImageFilter', image)
+        # homewindow.setProperty(self.prefix + "ImageColor", imagecolor)
 
 
 if (__name__ == "__main__"):
