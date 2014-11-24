@@ -83,6 +83,26 @@ def AddArtToLibrary(type, media, folder, limit, silent=False):
                                         (media, media.lower(), item.get('%sid' % media.lower()), type, i + 1, file_path))
 
 
+def media_path(path):
+    # Check for stacked movies
+    try:
+        path = os.path.split(path)[0].rsplit(' , ', 1)[1].replace(",,", ",")
+    except:
+        path = os.path.split(path)[0]
+    # Fixes problems with rared movies and multipath
+    if path.startswith("rar://"):
+        path = [
+            os.path.split(urllib.url2pathname(path.replace("rar://", "")))[0]]
+    elif path.startswith("multipath://"):
+        temp_path = path.replace("multipath://", "").split('%2f/')
+        path = []
+        for item in temp_path:
+            path.append(urllib.url2pathname(item))
+    else:
+        path = [path]
+    return path[0]
+
+
 def import_skinsettings():
     importstring = read_from_file()
     if importstring:
