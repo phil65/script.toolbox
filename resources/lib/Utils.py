@@ -91,16 +91,11 @@ def media_path(path):
         path = os.path.split(path)[0]
     # Fixes problems with rared movies and multipath
     if path.startswith("rar://"):
-        path = [
-            os.path.split(urllib.url2pathname(path.replace("rar://", "")))[0]]
+        path = os.path.split(urllib.url2pathname(path.replace("rar://", "")))[0]
     elif path.startswith("multipath://"):
         temp_path = path.replace("multipath://", "").split('%2f/')
-        path = []
-        for item in temp_path:
-            path.append(urllib.url2pathname(item))
-    else:
-        path = [path]
-    return path[0]
+        path = urllib.url2pathname(temp_path[0])
+    return path
 
 
 def import_skinsettings():
