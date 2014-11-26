@@ -50,7 +50,17 @@ class Main:
 
     def _StartInfoActions(self):
         for info in self.infos:
-            if info == 'channels':
+            if info == 'playmovie':
+                xbmc.executeJSONRPC('{ "jsonrpc": "2.0", "method": "Player.Open", "params": { "item": { "movieid": %i }, "options":{ "resume": %s } }, "id": 1 }' % (self.dbid, self.resume))
+            elif info == 'playepisode':
+                xbmc.executeJSONRPC('{ "jsonrpc": "2.0", "method": "Player.Open", "params": { "item": { "episodeid": %i }, "options":{ "resume": %s }  }, "id": 1 }' % (self.dbid, self.resume))
+            elif info == 'playmusicvideo':
+                xbmc.executeJSONRPC('{ "jsonrpc": "2.0", "method": "Player.Open", "params": { "item": { "musicvideoid": %i } }, "id": 1 }' % self.dbid)
+            elif info == 'playalbum':
+                xbmc.executeJSONRPC('{ "jsonrpc": "2.0", "method": "Player.Open", "params": { "item": { "albumid": %i } }, "id": 1 }' % self.dbid)
+            elif info == 'playsong':
+                xbmc.executeJSONRPC('{ "jsonrpc": "2.0", "method": "Player.Open", "params": { "item": { "songid": %i } }, "id": 1 }' % self.dbid)
+            elif info == 'channels':
                 channels = create_channel_list()
             elif info == 'favourites':
                 if self.id:
@@ -100,6 +110,8 @@ class Main:
         self.control = None
         self.infos = []
         self.id = ""
+        self.dbid = ""
+        self.resume = ""
         self.header = ""
         self.text = ""
         self.yeslabel = ""
@@ -127,8 +139,12 @@ class Main:
                 self.infos.append(arg[5:])
             elif arg.startswith('id='):
                 self.id = RemoveQuotes(arg[3:])
+            elif arg.startswith('dbid='):
+                self.dbid = int(arg[5:])
             elif arg.startswith('daemon='):
                 self.daemon = True
+            elif arg.startswith('resume='):
+                self.resume = arg[7:]
             elif arg.startswith('prefix='):
                 self.prefix = arg[7:]
                 if not self.prefix.endswith("."):
