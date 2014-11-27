@@ -132,7 +132,7 @@ class Main:
     def _parse_argv(self):
         args = sys.argv
         for arg in args:
-            arg = arg..replace("'\"","").replace("\"'","")
+            arg = arg.replace("'\"","").replace("\"'","")
             log(arg)
             if arg == 'script.toolbox':
                 continue
