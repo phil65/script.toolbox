@@ -210,14 +210,6 @@ def image_recolorize(src, black="#000099", white="#99CCFF"):
     return ImageOps.colorize(ImageOps.grayscale(src), black, white)
 
 
-def find_cached_file(url):
-    cachename = xbmc.getCacheThumbName(url)
-    thumbpath = "C:\Kodi\portable_data\userdata\Thumbnails"
-    for root, dirs, files in os.walk(thumbpath):
-        for filename in files:
-            if filename == cachename:
-                Notify(filename)
-
 def save_to_file(content, filename, path=""):
     if path == "":
         text_file_path = get_browse_dialog() + filename + ".txt"
