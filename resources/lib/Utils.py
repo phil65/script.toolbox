@@ -150,6 +150,15 @@ def Filter_Image(filterimage, radius):
         return "", ""
     img.thumbnail((200, 200), Image.ANTIALIAS)
     img = img.convert('RGB')
+    imagecolor = GetColorsFromImage(img)
+    log("Average Color: " + imagecolor)
+    imgfilter = MyGaussianBlur(radius=radius)
+    img = img.filter(imgfilter)
+    img.save(targetfile)
+    return targetfile, imagecolor
+
+
+def GetColorsFromImage(img):
     width, height = img.size
     pixels = img.load()
     data = []
@@ -188,14 +197,9 @@ def Filter_Image(filterimage, radius):
                 bAvg += Diff
             else:
                 bAvg = 255
-        imagecolor = "FF%s%s%s" % (format(rAvg, '02x'), format(gAvg, '02x'), format(bAvg, '02x'))
+        return "FF%s%s%s" % (format(rAvg, '02x'), format(gAvg, '02x'), format(bAvg, '02x'))
     else:
-        imagecolor = "FFF0F0F0"
-    log("Average Color: " + imagecolor)
-    imgfilter = MyGaussianBlur(radius=radius)
-    img = img.filter(imgfilter)
-    img.save(targetfile)
-    return targetfile, imagecolor
+        return "FFF0F0F0"
 
 
 def image_recolorize(src, black="#000099", white="#99CCFF"):
