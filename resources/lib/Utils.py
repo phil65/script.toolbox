@@ -132,15 +132,13 @@ def Filter_Image(filterimage, radius):
     md5 = hashlib.md5(filterimage).hexdigest()
     filename = md5 + str(radius) + ".png"
     targetfile = os.path.join(Addon_Data_Path, filename)
-   # cachefile = xbmc.getCacheThumbName(targetfile)
- #   find_cached_file(cachefile)
-    # if not xbmcvfs.exists(targetfile):
-    #     imagefile = xbmcvfs.File(targetfile, "w")
-    #     imagefile.close()
-    # if filterimage == "screenshot":
-    #     img = ImageGrab.grab()
+    cachedthumb = xbmc.getCacheThumbName(filterimage)[:-4]
+ #   xbmc_cache_file = os.path.join(xbmc.translatePath("special://profile/Thumbnails/Video"), cachedthumb[0], cachedthumb + ".tbn")
+    xbmc_cache_file = os.path.join(xbmc.translatePath("special://profile/Thumbnails/"), cachedthumb[0], cachedthumb + filterimage[-4:])
     if filterimage == "":
         return "", ""
+    elif xbmcvfs.exists(xbmc_cache_file):
+            img = Image.open(xbmc_cache_file)
     elif xbmcvfs.exists(filterimage):
         if xbmcvfs.exists(targetfile):
             img = Image.open(targetfile)
