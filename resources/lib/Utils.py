@@ -150,7 +150,8 @@ def Filter_Image(filterimage, radius):
     else:
         log("image does not exist. Path: " + filterimage)
         return "", ""
-    img.thumbnail((200,200), Image.ANTIALIAS)
+    img = img.convert('RGB')
+    img.thumbnail((200, 200), Image.ANTIALIAS)
     width, height = img.size
     pixels = img.load()
     data = []
