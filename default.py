@@ -3,25 +3,19 @@ import os
 import xbmc
 import xbmcgui
 import xbmcaddon
-import urlparse
-import urllib
 
 __addon__ = xbmcaddon.Addon()
 __addonid__ = __addon__.getAddonInfo('id')
 __addonversion__ = __addon__.getAddonInfo('version')
 __language__ = __addon__.getLocalizedString
 __cwd__ = __addon__.getAddonInfo('path').decode("utf-8")
-__resource__ = xbmc.translatePath(os.path.join(__cwd__, 'resources', 'lib')).decode("utf-8")
-__addonpath__ = __addon__.getAddonInfo('path')
-sys.path.append(__resource__)
+sys.path.append(xbmc.translatePath(os.path.join(__cwd__, 'resources', 'lib')))
 
 from Utils import *
 
 extrafanart_limit = 4
 extrathumb_limit = 4
 homewindow = xbmcgui.Window(10000)
-Addon_Data_Path = os.path.join(xbmc.translatePath("special://profile/addon_data/%s" % __addonid__).decode("utf-8"))
-Skin_Data_Path = os.path.join(xbmc.translatePath("special://profile/addon_data/%s" % xbmc.getSkinDir()).decode("utf-8"))
 
 
 class Main:
@@ -82,7 +76,7 @@ class Main:
             elif info == 'notification':
                 CreateNotification(self.header, self.text, self.icon, self.time, self.sound)
             elif info == 'textviewer':
-                w = TextViewer_Dialog('DialogTextViewer.xml', __addonpath__, header=self.header, text=self.text)
+                w = TextViewer_Dialog('DialogTextViewer.xml', __cwd__, header=self.header, text=self.text)
                 w.doModal()
             elif info == "sortletters":
                 listitems = GetSortLetters(self.path, self.id)
