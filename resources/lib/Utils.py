@@ -132,13 +132,20 @@ def Filter_Image(filterimage, radius):
     md5 = hashlib.md5(filterimage).hexdigest()
     filename = md5 + str(radius) + ".png"
     targetfile = os.path.join(Addon_Data_Path, filename)
-    cachedthumb = xbmc.getCacheThumbName(filterimage)[:-4]
- #   xbmc_cache_file = os.path.join(xbmc.translatePath("special://profile/Thumbnails/Video"), cachedthumb[0], cachedthumb + ".tbn")
-    xbmc_cache_file = os.path.join(xbmc.translatePath("special://profile/Thumbnails/"), cachedthumb[0], cachedthumb + filterimage[-4:])
+    cachedthumb = xbmc.getCacheThumbName(filterimage)
+    xbmc_vid_cache_file = os.path.join("special://profile/Thumbnails/Video", cachedthumb[0], cachedthumb)
+    xbmc_cache_file = os.path.join("special://profile/Thumbnails/", cachedthumb[0], cachedthumb[:-4] +".jpg")
+    # xbmc_vid_cache_file = xbmc.translatePath("special://profile/Thumbnails/Video/%s/%s" % (cachedthumb[0], cachedthumb))
+    # xbmc_cache_file = xbmc.translatePath("special://profile/Thumbnails/%s/%s" % (cachedthumb[0], cachedthumb))
+    # if xbmcvfs.exists(xbmc_vid_cache_file):
+    #    Notify("Vid Cache: " + xbmc_vid_cache_file)
+    #     imagefile = xbmcvfs.File(targetfile, "w")
+    #     imagefile.close()
     if filterimage == "":
         return "", ""
     elif xbmcvfs.exists(xbmc_cache_file):
-            img = Image.open(xbmc_cache_file)
+        xbmcvfs.copy(xbmc_cache_file, targetfile)
+        img = Image.open(targetfile)
     elif xbmcvfs.exists(filterimage):
         if xbmcvfs.exists(targetfile):
             img = Image.open(targetfile)
@@ -150,15 +157,13 @@ def Filter_Image(filterimage, radius):
         return "", ""
     img.thumbnail((200, 200), Image.ANTIALIAS)
     img = img.convert('RGB')
-    imagecolor = GetColorsFromImage(img)
-    log("Average Color: " + imagecolor)
+    imagecolor = Get_Colors(img)
     imgfilter = MyGaussianBlur(radius=radius)
     img = img.filter(imgfilter)
     img.save(targetfile)
     return targetfile, imagecolor
 
-
-def GetColorsFromImage(img):
+def Get_Colors(img):
     width, height = img.size
     pixels = img.load()
     data = []
@@ -197,10 +202,11 @@ def GetColorsFromImage(img):
                 bAvg += Diff
             else:
                 bAvg = 255
-        return "FF%s%s%s" % (format(rAvg, '02x'), format(gAvg, '02x'), format(bAvg, '02x'))
+        imagecolor = "FF%s%s%s" % (format(rAvg, '02x'), format(gAvg, '02x'), format(bAvg, '02x'))
     else:
-        return "FFF0F0F0"
-
+        imagecolor = "FFF0F0F0"
+    log("Average Color: " + imagecolor)
+    return imagecolor
 
 def image_recolorize(src, black="#000099", white="#99CCFF"):
  #   img = image_recolorize(img, black="#000000", white="#FFFFFF")
@@ -213,6 +219,14 @@ def image_recolorize(src, black="#000099", white="#99CCFF"):
     """
     return ImageOps.colorize(ImageOps.grayscale(src), black, white)
 
+
+def find_cached_file(url):
+    cachename = xbmc.getCacheThumbName(url)
+    thumbpath = "C:\Kodi\portable_data\userdata\Thumbnails"
+    for root, dirs, files in os.walk(thumbpath):
+        for filename in files:
+            if filename == cachename:
+                Notify(filename)
 
 def save_to_file(content, filename, path=""):
     if path == "":
@@ -330,19 +344,21 @@ def GetPlaylistStats(path):
 
 def CreateDialogSelect(header):
     selectionlist = []
-    for i in range(1, 50):
+    indexlist = []
+    for i in range(1, 20):
         label = xbmc.getInfoLabel("Window.Property(Dialog.%i.Label)" % (i))
         if label == "":
             break
         if label != "-":
             selectionlist.append(label)
+            indexlist.append(i)
     if selectionlist:
         select_dialog = xbmcgui.Dialog()
         index = select_dialog.select(header, selectionlist)
-        value = xbmc.getInfoLabel("Window.Property(Dialog.%i.Builtin)" % (index + 1))
+        value = xbmc.getInfoLabel("Window.Property(Dialog.%i.Builtin)" % (indexlist[index]))
         for builtin in value.split("||"):
             xbmc.executebuiltin(builtin)
-    for i in range(1, 50):
+    for i in range(1, 20):
         xbmc.executebuiltin("ClearProperty(Dialog.%i.Builtin)" % (i))
         xbmc.executebuiltin("ClearProperty(Dialog.%i.Label)" % (i))
 
