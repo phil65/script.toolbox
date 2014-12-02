@@ -105,7 +105,7 @@ class Main:
         self.infos = []
         self.id = ""
         self.dbid = ""
-        self.resume = ""
+        self.resume = "false"
         self.header = ""
         self.text = ""
         self.yeslabel = ""
