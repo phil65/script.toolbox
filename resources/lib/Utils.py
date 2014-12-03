@@ -7,6 +7,7 @@ import os
 import simplejson
 import shutil
 import hashlib
+import urllib
 import time
 try:
     from PIL import Image, ImageFilter, ImageOps
@@ -127,6 +128,9 @@ def import_skinsettings():
 
 
 def Filter_Image(filterimage, radius):
+    filterimage = urllib.unquote(filterimage.replace("image://", "")).decode('utf8')
+    if filterimage.endswith("/"):
+        filterimage = filterimage[:-1]
     if not xbmcvfs.exists(Addon_Data_Path):
         xbmcvfs.mkdir(Addon_Data_Path)
     md5 = hashlib.md5(filterimage).hexdigest()
