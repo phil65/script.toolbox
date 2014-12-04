@@ -137,34 +137,31 @@ def Filter_Image(filterimage, radius):
     filename = md5 + str(radius) + ".png"
     targetfile = os.path.join(Addon_Data_Path, filename)
     cachedthumb = xbmc.getCacheThumbName(filterimage)
+    log(filterimage)
     xbmc_vid_cache_file = os.path.join("special://profile/Thumbnails/Video", cachedthumb[0], cachedthumb)
     xbmc_cache_file = os.path.join("special://profile/Thumbnails/", cachedthumb[0], cachedthumb[:-4] +".jpg")
-    # xbmc_vid_cache_file = xbmc.translatePath("special://profile/Thumbnails/Video/%s/%s" % (cachedthumb[0], cachedthumb))
-    # xbmc_cache_file = xbmc.translatePath("special://profile/Thumbnails/%s/%s" % (cachedthumb[0], cachedthumb))
-    # if xbmcvfs.exists(xbmc_vid_cache_file):
-    #    Notify("Vid Cache: " + xbmc_vid_cache_file)
-    #     imagefile = xbmcvfs.File(targetfile, "w")
-    #     imagefile.close()
     if filterimage == "":
         return "", ""
-    elif xbmcvfs.exists(xbmc_cache_file):
-        xbmcvfs.copy(xbmc_cache_file, targetfile)
-        img = Image.open(targetfile)
-    elif xbmcvfs.exists(filterimage):
-        if xbmcvfs.exists(targetfile):
-            img = Image.open(targetfile)
+    if not xbmcvfs.exists(targetfile):
+        if xbmcvfs.exists(xbmc_cache_file):
+            log("image already in xbmc cache: " + xbmc_cache_file)
+            img = Image.open(xbmc.translatePath(xbmc_cache_file))
+        elif xbmcvfs.exists(xbmc_vid_cache_file):
+            log("image already in xbmc video cache: " + xbmc_vid_cache_file)
+            img = Image.open(xbmc.translatePath(xbmc_vid_cache_file))
         else:
+            log("copy image from source: " + filterimage)
             xbmcvfs.copy(filterimage, targetfile)
             img = Image.open(targetfile)
+
+        img.thumbnail((200, 200), Image.ANTIALIAS)
+        img = img.convert('RGB')
+        imgfilter = MyGaussianBlur(radius=radius)
+        img = img.filter(imgfilter)
+        img.save(targetfile)
     else:
-        log("image does not exist. Path: " + filterimage)
-        return "", ""
-    img.thumbnail((200, 200), Image.ANTIALIAS)
-    img = img.convert('RGB')
+        img = Image.open(targetfile)
     imagecolor = Get_Colors(img)
-    imgfilter = MyGaussianBlur(radius=radius)
-    img = img.filter(imgfilter)
-    img.save(targetfile)
     return targetfile, imagecolor
 
 def Get_Colors(img):
