@@ -137,7 +137,6 @@ def Filter_Image(filterimage, radius):
     filename = md5 + str(radius) + ".png"
     targetfile = os.path.join(Addon_Data_Path, filename)
     cachedthumb = xbmc.getCacheThumbName(filterimage)
-    log(filterimage)
     xbmc_vid_cache_file = os.path.join("special://profile/Thumbnails/Video", cachedthumb[0], cachedthumb)
     xbmc_cache_file = os.path.join("special://profile/Thumbnails/", cachedthumb[0], cachedthumb[:-4] +".jpg")
     if filterimage == "":
@@ -160,6 +159,7 @@ def Filter_Image(filterimage, radius):
         img = img.filter(imgfilter)
         img.save(targetfile)
     else:
+        log("blurred img already created: " + targetfile)
         img = Image.open(targetfile)
     imagecolor = Get_Colors(img)
     return targetfile, imagecolor
@@ -219,15 +219,6 @@ def image_recolorize(src, black="#000099", white="#99CCFF"):
     The defaults set the image to a blue hued image.
     """
     return ImageOps.colorize(ImageOps.grayscale(src), black, white)
-
-
-def find_cached_file(url):
-    cachename = xbmc.getCacheThumbName(url)
-    thumbpath = "C:\Kodi\portable_data\userdata\Thumbnails"
-    for root, dirs, files in os.walk(thumbpath):
-        for filename in files:
-            if filename == cachename:
-                Notify(filename)
 
 def save_to_file(content, filename, path=""):
     if path == "":
