@@ -128,9 +128,6 @@ def import_skinsettings():
 
 
 def Filter_Image(filterimage, radius):
-    filterimage = urllib.unquote(filterimage.replace("image://", "")).decode('utf8')
-    if filterimage.endswith("/"):
-        filterimage = filterimage[:-1]
     if not xbmcvfs.exists(Addon_Data_Path):
         xbmcvfs.mkdir(Addon_Data_Path)
     md5 = hashlib.md5(filterimage).hexdigest()
@@ -142,17 +139,30 @@ def Filter_Image(filterimage, radius):
     if filterimage == "":
         return "", ""
     if not xbmcvfs.exists(targetfile):
-        if xbmcvfs.exists(xbmc_cache_file):
-            log("image already in xbmc cache: " + xbmc_cache_file)
-            img = Image.open(xbmc.translatePath(xbmc_cache_file))
-        elif xbmcvfs.exists(xbmc_vid_cache_file):
-            log("image already in xbmc video cache: " + xbmc_vid_cache_file)
-            img = Image.open(xbmc.translatePath(xbmc_vid_cache_file))
-        else:
-            log("copy image from source: " + filterimage)
-            xbmcvfs.copy(filterimage, targetfile)
-            img = Image.open(targetfile)
-
+        img = None
+        for i in range(1, 4):
+            try:
+                if xbmcvfs.exists(xbmc_cache_file):
+                    log("image already in xbmc cache: " + xbmc_cache_file)
+                    img = Image.open(xbmc.translatePath(xbmc_cache_file))
+                    break
+                elif xbmcvfs.exists(xbmc_vid_cache_file):
+                    log("image already in xbmc video cache: " + xbmc_vid_cache_file)
+                    img = Image.open(xbmc.translatePath(xbmc_vid_cache_file))
+                    break
+                else:
+                    filterimage = urllib.unquote(filterimage.replace("image://", "")).decode('utf8')
+                    if filterimage.endswith("/"):
+                        filterimage = filterimage[:-1]
+                    log("copy image from source: " + filterimage)
+                    xbmcvfs.copy(filterimage, targetfile)
+                    img = Image.open(targetfile)
+                    break
+            except:
+                log("Could not get image for %s (try %i)" % (filterimage, i))
+                xbmc.sleep(500)
+        if not img:
+            return "", ""
         img.thumbnail((200, 200), Image.ANTIALIAS)
         img = img.convert('RGB')
         imgfilter = MyGaussianBlur(radius=radius)
