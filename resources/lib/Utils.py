@@ -278,7 +278,6 @@ def JumpToLetter(letter):
             jumpsms_id = None
         if jumpsms_id:
             for i in range(1, 5):
-              #  Notify("JumpSMS" + jumpsms_id)
               #  xbmc.executebuiltin("jumpsms" + jumpsms_id)
                 xbmc.executeJSONRPC('{ "jsonrpc": "2.0", "method": "Input.ExecuteAction", "params": { "action": "jumpsms%s" }, "id": 1 }' % (jumpsms_id))
            #     prettyprint(response)
@@ -324,7 +323,6 @@ def GetPlaylistStats(path):
         endindex = path.rfind("/") + 1
     if (startindex > 0) and (endindex > 0):
         playlistpath = path[startindex:endindex]
-    #    Notify(playlistpath)
     #   json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {"filter": {"field": "path", "operator": "contains", "value": "%s"}, "properties": ["playcount", "resume"]}, "id": 1}' % (playlistpath))
         json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "video", "properties": ["playcount", "resume"]}, "id": 1}' % (playlistpath))
         json_query = unicode(json_query, 'utf-8', errors='ignore')
@@ -357,9 +355,10 @@ def CreateDialogSelect(header):
     if selectionlist:
         select_dialog = xbmcgui.Dialog()
         index = select_dialog.select(header, selectionlist)
-        value = xbmc.getInfoLabel("Window.Property(Dialog.%i.Builtin)" % (indexlist[index]))
-        for builtin in value.split("||"):
-            xbmc.executebuiltin(builtin)
+        if index > -1:
+            value = xbmc.getInfoLabel("Window.Property(Dialog.%i.Builtin)" % (indexlist[index]))
+            for builtin in value.split("||"):
+                xbmc.executebuiltin(builtin)
     for i in range(1, 20):
         xbmc.executebuiltin("ClearProperty(Dialog.%i.Builtin)" % (i))
         xbmc.executebuiltin("ClearProperty(Dialog.%i.Label)" % (i))
