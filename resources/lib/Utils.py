@@ -349,7 +349,7 @@ def CreateDialogSelect(header):
         label = xbmc.getInfoLabel("Window.Property(Dialog.%i.Label)" % (i))
         if label == "":
             break
-        if label != "-":
+        elif label != "none" and label != "-":
             selectionlist.append(label)
             indexlist.append(i)
     if selectionlist:

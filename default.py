@@ -69,6 +69,10 @@ class Main:
                 GetPlaylistStats(self.id)
             elif info == 'selectdialog':
                 CreateDialogSelect(self.header)
+            elif info == 'exportskinsettings':
+                export_skinsettings()
+            elif info == 'importskinsettings':
+                import_skinsettings()
             elif info == 'okdialog':
                 CreateDialogOK(self.header, self.text)
             elif info == 'yesnodialog':
