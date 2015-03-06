@@ -83,9 +83,17 @@ msgid "Add extrathumbs to library"
 msgstr ""
 
 msgctxt "#32015"
-msgid "Add extrafanart to library"
+msgid "Add extrafanart to movie library"
 msgstr ""
 
 msgctxt "#32016"
 msgid "Updating database with local art"
+msgstr ""
+
+msgctxt "#32017"
+msgid "Update all"
+msgstr ""
+
+msgctxt "#32018"
+msgid "Add extrafanart to TV show library"
 msgstr ""

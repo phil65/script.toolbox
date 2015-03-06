@@ -4,12 +4,11 @@ import xbmc
 import xbmcgui
 import xbmcaddon
 
-__addon__ = xbmcaddon.Addon()
-__addonid__ = __addon__.getAddonInfo('id')
-__addonversion__ = __addon__.getAddonInfo('version')
-__language__ = __addon__.getLocalizedString
-__cwd__ = __addon__.getAddonInfo('path').decode("utf-8")
-sys.path.append(xbmc.translatePath(os.path.join(__cwd__, 'resources', 'lib')))
+addon = xbmcaddon.Addon()
+addon_version = addon.getAddonInfo('version')
+language = addon.getLocalizedString
+addon_path = addon.getAddonInfo('path').decode("utf-8")
+sys.path.append(xbmc.translatePath(os.path.join(addon_path, 'resources', 'lib')))
 
 from Utils import *
 
@@ -21,7 +20,7 @@ homewindow = xbmcgui.Window(10000)
 class Main:
 
     def __init__(self):
-        log("version %s started" % __addonversion__)
+        log("version %s started" % addon_version)
         xbmc.executebuiltin('SetProperty(toolbox_running,True,home)')
         self._init_vars()
         self._parse_argv()
@@ -80,7 +79,7 @@ class Main:
             elif info == 'notification':
                 CreateNotification(self.header, self.text, self.icon, self.time, self.sound)
             elif info == 'textviewer':
-                w = TextViewer_Dialog('DialogTextViewer.xml', __cwd__, header=self.header, text=self.text)
+                w = TextViewer_Dialog('DialogTextViewer.xml', addon_path, header=self.header, text=self.text)
                 w.doModal()
             elif info == "sortletters":
                 listitems = GetSortLetters(self.path, self.id)
@@ -183,16 +182,15 @@ class Main:
 
     def _selection_dialog(self):
         modeselect = []
-        modeselect.append(__language__(32001))
-        modeselect.append(__language__(32002))
-        modeselect.append(__language__(32003))
-        modeselect.append(__language__(32014))
-        modeselect.append(__language__(32015))
-     #   modeselect.append( __language__(32014) + " (TV)" )
-        modeselect.append(__language__(32015) + " (TV)")
-        modeselect.append("Update All")
+        modeselect.append(language(32001))
+        modeselect.append(language(32002))
+        modeselect.append(language(32003))
+        modeselect.append(language(32014))
+        modeselect.append(language(32015))
+        modeselect.append(language(32018))
+        modeselect.append(language(32017))
         dialogSelection = xbmcgui.Dialog()
-        selection = dialogSelection.select(__language__(32004), modeselect)
+        selection = dialogSelection.select(language(32004), modeselect)
         if selection == 0:
             export_skinsettings()
         elif selection == 1:
