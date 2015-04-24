@@ -9,7 +9,7 @@ import hashlib
 import urllib
 from PIL import Image, ImageOps
 from ImageOperations import MyGaussianBlur
-
+from xml.dom.minidom import parse
 
 ADDON = xbmcaddon.Addon()
 ADDON_ID = ADDON.getAddonInfo('id')
@@ -290,7 +290,6 @@ def JumpToLetter(letter):
 
 
 def export_skinsettings():
-    from xml.dom.minidom import parse
     guisettings_path = xbmc.translatePath('special://profile/guisettings.xml').decode("utf-8")
     if xbmcvfs.exists(guisettings_path):
         log("guisettings.xml found")

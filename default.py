@@ -4,23 +4,22 @@ import xbmc
 import xbmcgui
 import xbmcaddon
 
-addon = xbmcaddon.Addon()
-addon_version = addon.getAddonInfo('version')
-language = addon.getLocalizedString
-addon_path = addon.getAddonInfo('path').decode("utf-8")
-sys.path.append(xbmc.translatePath(os.path.join(addon_path, 'resources', 'lib')))
+ADDON = xbmcaddon.Addon()
+ADDON_VERSION = ADDON.getAddonInfo('version')
+ADDON_LANGUAGE = ADDON.getLocalizedString
+ADDON_PATH = ADDON.getAddonInfo('path').decode("utf-8")
+EXTRAFANART_LIMIT = 4
+EXTRATHUMB_LIMIT = 4
+HOME = xbmcgui.Window(10000)
+sys.path.append(xbmc.translatePath(os.path.join(ADDON_PATH, 'resources', 'lib')))
 
 from Utils import *
-
-extrafanart_limit = 4
-extrathumb_limit = 4
-homewindow = xbmcgui.Window(10000)
 
 
 class Main:
 
     def __init__(self):
-        log("version %s started" % addon_version)
+        log("version %s started" % ADDON_VERSION)
         xbmc.executebuiltin('SetProperty(toolbox_running,True,home)')
         self._init_vars()
         self._parse_argv()
@@ -36,8 +35,8 @@ class Main:
             if self.image_now != self.image_prev:
                 self.image_prev = self.image_now
                 image, imagecolor = Filter_Image(self.image_now, self.radius)
-                homewindow.setProperty(self.prefix + 'ImageFilter', image)
-                homewindow.setProperty(self.prefix + "ImageColor", imagecolor)
+                HOME.setProperty(self.prefix + 'ImageFilter', image)
+                HOME.setProperty(self.prefix + "ImageColor", imagecolor)
             else:
                 xbmc.sleep(300)
 
@@ -60,9 +59,9 @@ class Main:
                     favourites = GetFavouriteswithType(self.id)
                 else:
                     favourites = GetFavourites()
-                    homewindow.setProperty('favourite.count', str(len(favourites)))
+                    HOME.setProperty('favourite.count', str(len(favourites)))
                     if len(favourites) > 0:
-                        homewindow.setProperty('favourite.1.name', favourites[-1]["Label"])
+                        HOME.setProperty('favourite.1.name', favourites[-1]["Label"])
                 passDataToSkin('Favourites', favourites, self.prefix, self.window, self.control, self.handle)
             elif info == 'playliststats':
                 GetPlaylistStats(self.id)
@@ -79,7 +78,7 @@ class Main:
             elif info == 'notification':
                 CreateNotification(self.header, self.text, self.icon, self.time, self.sound)
             elif info == 'textviewer':
-                w = TextViewer_Dialog('DialogTextViewer.xml', addon_path, header=self.header, text=self.text)
+                w = TextViewer_Dialog('DialogTextViewer.xml', ADDON_PATH, header=self.header, text=self.text)
                 w.doModal()
             elif info == "sortletters":
                 listitems = GetSortLetters(self.path, self.id)
@@ -96,11 +95,11 @@ class Main:
             elif info == 'jumptoletter':
                 JumpToLetter(self.id)
             elif info == 'blur':
-                homewindow.clearProperty(self.prefix + 'ImageFilter')
+                HOME.clearProperty(self.prefix + 'ImageFilter')
                 log("Blur image %s with radius %i" % (self.id, self.radius))
                 image, imagecolor = Filter_Image(self.id, self.radius)
-                homewindow.setProperty(self.prefix + 'ImageFilter', image)
-                homewindow.setProperty(self.prefix + "ImageColor", imagecolor)
+                HOME.setProperty(self.prefix + 'ImageFilter', image)
+                HOME.setProperty(self.prefix + "ImageColor", imagecolor)
 
     def _init_vars(self):
         self.window = xbmcgui.Window(10000)  # Home Window
@@ -124,12 +123,12 @@ class Main:
         self.image_now = ""
         self.image_prev = ""
         self.autoclose = ""
-     #   self.Monitor = ToolBoxMonitor(self)
+        # self.Monitor = ToolBoxMonitor(self)
 
     def _parse_argv(self):
         args = sys.argv
         for arg in args:
-            arg = arg.replace("'\"","").replace("\"'","")
+            arg = arg.replace("'\"", "").replace("\"'", "")
             log(arg)
             if arg == 'script.toolbox':
                 continue
@@ -182,15 +181,15 @@ class Main:
 
     def _selection_dialog(self):
         modeselect = []
-        modeselect.append(language(32001))
-        modeselect.append(language(32002))
-        modeselect.append(language(32003))
-        modeselect.append(language(32014))
-        modeselect.append(language(32015))
-        modeselect.append(language(32018))
-        modeselect.append(language(32017))
+        modeselect.append(ADDON_LANGUAGE(32001))
+        modeselect.append(ADDON_LANGUAGE(32002))
+        modeselect.append(ADDON_LANGUAGE(32003))
+        modeselect.append(ADDON_LANGUAGE(32014))
+        modeselect.append(ADDON_LANGUAGE(32015))
+        modeselect.append(ADDON_LANGUAGE(32018))
+        modeselect.append(ADDON_LANGUAGE(32017))
         dialogSelection = xbmcgui.Dialog()
-        selection = dialogSelection.select(language(32004), modeselect)
+        selection = dialogSelection.select(ADDON_LANGUAGE(32004), modeselect)
         if selection == 0:
             export_skinsettings()
         elif selection == 1:
@@ -198,17 +197,17 @@ class Main:
         elif selection == 2:
             xbmc.executebuiltin("Skin.ResetSettings")
         elif selection == 3:
-            AddArtToLibrary("extrathumb", "Movie", "extrathumbs", extrathumb_limit)
+            AddArtToLibrary("extrathumb", "Movie", "extrathumbs", EXTRATHUMB_LIMIT)
         elif selection == 4:
-            AddArtToLibrary("extrafanart", "Movie", "extrafanart", extrafanart_limit)
-   #     elif selection == 5:
-    #        AddArtToLibrary("extrathumb","TVShow", "extrathumbs")
+            AddArtToLibrary("extrafanart", "Movie", "extrafanart", EXTRAFANART_LIMIT)
+        # elif selection == 5:
+        # AddArtToLibrary("extrathumb","TVShow", "extrathumbs")
         elif selection == 5:
-            AddArtToLibrary("extrafanart", "TVShow", "extrafanart", extrafanart_limit)
+            AddArtToLibrary("extrafanart", "TVShow", "extrafanart", EXTRAFANART_LIMIT)
         elif selection == 6:
-            AddArtToLibrary("extrathumb", "Movie", "extrathumbs", extrathumb_limit)
-            AddArtToLibrary("extrafanart", "Movie", "extrafanart", extrafanart_limit)
-            AddArtToLibrary("extrafanart", "TVShow", "extrafanart", extrafanart_limit)
+            AddArtToLibrary("extrathumb", "Movie", "extrathumbs", EXTRATHUMB_LIMIT)
+            AddArtToLibrary("extrafanart", "Movie", "extrafanart", EXTRAFANART_LIMIT)
+            AddArtToLibrary("extrafanart", "TVShow", "extrafanart", EXTRAFANART_LIMIT)
 
 
 class ToolBoxMonitor(xbmc.Monitor):
@@ -216,14 +215,13 @@ class ToolBoxMonitor(xbmc.Monitor):
     def __init__(self, *args, **kwargs):
         xbmc.Monitor.__init__(self)
 
-
     def onPlayBackStarted(self):
         pass
-   #     homewindow.clearProperty(self.prefix + 'ImageFilter')
-   #     Notify("test", "test")
+        # HOME.clearProperty(self.prefix + 'ImageFilter')
+        # Notify("test", "test")
         # image, imagecolor = Filter_Image(self.id, self.radius)
-        # homewindow.setProperty(self.prefix + 'ImageFilter', image)
-        # homewindow.setProperty(self.prefix + "ImageColor", imagecolor)
+        # HOME.setProperty(self.prefix + 'ImageFilter', image)
+        # HOME.setProperty(self.prefix + "ImageColor", imagecolor)
 
 
 if (__name__ == "__main__"):
