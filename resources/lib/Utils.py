@@ -564,24 +564,60 @@ def SetWindowProperties(name, data, prefix="", debug=False):
         log("%s%s.Count = None" % (prefix, name))
 
 
-def CreateListItems(data):
+def CreateListItems(data=None, preload_images=0):
+    Int_InfoLabels = ["year", "episode", "season", "top250", "tracknumber", "playcount", "overlay"]
+    Float_InfoLabels = ["rating"]
+    String_InfoLabels = ["genre", "director", "mpaa", "plot", "plotoutline", "title", "originaltitle", "sorttitle", "duration", "studio", "tagline", "writer",
+                         "tvshowtitle", "premiered", "status", "code", "aired", "credits", "lastplayed", "album", "votes", "trailer", "dateadded"]
     itemlist = []
     if data is not None:
+        # threads = []
+        # image_requests = []
         for (count, result) in enumerate(data):
             listitem = xbmcgui.ListItem('%s' % (str(count)))
             itempath = ""
+            counter = 1
             for (key, value) in result.iteritems():
-                if str(key).lower() in ["name", "label", "title"]:
-                    listitem.setLabel(unicode(value))
-                if str(key).lower() in ["thumb"]:
-                    listitem.setThumbnailImage(unicode(value))
-                if str(key).lower() in ["icon"]:
-                    listitem.setIconImage(unicode(value))
-                if str(key).lower() in ["thumb", "poster", "banner", "fanart", "clearart", "clearlogo", "landscape", "discart", "characterart", "tvshow.fanart", "tvshow.poster", "tvshow.banner", "tvshow.clearart", "tvshow.characterart"]:
-                    listitem.setArt({str(key).lower(): unicode(value)})
-                if str(key).lower() in ["path"]:
-                    itempath = unicode(value)
-                listitem.setProperty('%s' % (str(key)), unicode(value))
+                if not value:
+                    continue
+                value = unicode(value)
+                # if counter <= preload_images:
+                #     if value.startswith("http://") and (value.endswith(".jpg") or value.endswith(".png")):
+                #         if value not in image_requests:
+                #             thread = Get_File_Thread(value)
+                #             threads += [thread]
+                #             thread.start()
+                #             image_requests.append(value)
+                if key.lower() in ["name", "label", "title"]:
+                    listitem.setLabel(value)
+                elif key.lower() in ["thumb"]:
+                    listitem.setThumbnailImage(value)
+                elif key.lower() in ["icon"]:
+                    listitem.setIconImage(value)
+                elif key.lower() in ["path"]:
+                    itempath = value
+                if key.lower() in ["thumb", "poster", "banner", "fanart", "clearart", "clearlogo", "landscape", "discart", "characterart", "tvshow.fanart", "tvshow.poster", "tvshow.banner", "tvshow.clearart", "tvshow.characterart"]:
+                    listitem.setArt({key.lower(): value})
+                if key.lower() in Int_InfoLabels:
+                    try:
+                        listitem.setInfo('video', {key.lower(): int(value)})
+                    except:
+                        pass
+                if key.lower() in String_InfoLabels:
+                    listitem.setInfo('video', {key.lower(): value})
+                if key.lower() in Float_InfoLabels:
+                    try:
+                        listitem.setInfo('video', {key.lower(): "%1.1f" % float(value)})
+                    except:
+                        pass
+                listitem.setProperty('%s' % (key), value)
             listitem.setPath(path=itempath)
+            listitem.setProperty("index", str(counter))
             itemlist.append(listitem)
+            counter += 1
+        # for x in threads:
+        #     x.join()
     return itemlist
+
+
+

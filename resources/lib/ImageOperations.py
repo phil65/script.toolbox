@@ -2,7 +2,7 @@ from PIL import ImageFilter
 
 
 class MyGaussianBlur(ImageFilter.Filter):
-    name = "GaussianBlur"
+    NAME = "GaussianBlur"
 
     def __init__(self, radius=2):
         self.radius = radius
@@ -12,7 +12,7 @@ class MyGaussianBlur(ImageFilter.Filter):
 
 
 class UnsharpMask(ImageFilter.Filter):
-    name = "UnsharpMask"
+    NAME = "UnsharpMask"
 
     def __init__(self, radius=2, percent=150, threshold=3):
         self.radius = 2
