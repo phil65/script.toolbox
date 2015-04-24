@@ -14,8 +14,8 @@ from ImageOperations import MyGaussianBlur
 ADDON = xbmcaddon.Addon()
 ADDON_ID = ADDON.getAddonInfo('id')
 ADDON_LANGUAGE = ADDON.getLocalizedString
-Addon_Data_Path = os.path.join(xbmc.translatePath("special://profile/addon_data/%s" % ADDON_ID))
-homewindow = xbmcgui.Window(10000)
+ADDON_DATA_PATH = os.path.join(xbmc.translatePath("special://profile/addon_data/%s" % ADDON_ID))
+HOME = xbmcgui.Window(10000)
 
 
 class TextViewer_Dialog(xbmcgui.WindowXMLDialog):
@@ -123,11 +123,11 @@ def import_skinsettings():
 
 
 def Filter_Image(filterimage, radius):
-    if not xbmcvfs.exists(Addon_Data_Path):
-        xbmcvfs.mkdir(Addon_Data_Path)
+    if not xbmcvfs.exists(ADDON_DATA_PATH):
+        xbmcvfs.mkdir(ADDON_DATA_PATH)
     md5 = hashlib.md5(filterimage).hexdigest()
     filename = md5 + str(radius) + ".png"
-    targetfile = os.path.join(Addon_Data_Path, filename)
+    targetfile = os.path.join(ADDON_DATA_PATH, filename)
     cachedthumb = xbmc.getCacheThumbName(filterimage)
     xbmc_vid_cache_file = os.path.join("special://profile/Thumbnails/Video", cachedthumb[0], cachedthumb)
     xbmc_cache_file = os.path.join("special://profile/Thumbnails/", cachedthumb[0], cachedthumb[:-4] + ".jpg")
@@ -339,10 +339,10 @@ def GetPlaylistStats(path):
                         played += 1
                     if item["resume"]["position"] > 0:
                         inprogress += 1
-            homewindow.setProperty('PlaylistWatched', str(played))
-            homewindow.setProperty('PlaylistUnWatched', str(numitems - played))
-            homewindow.setProperty('PlaylistInProgress', str(inprogress))
-            homewindow.setProperty('PlaylistCount', str(numitems))
+            HOME.setProperty('PlaylistWatched', str(played))
+            HOME.setProperty('PlaylistUnWatched', str(numitems - played))
+            HOME.setProperty('PlaylistInProgress', str(inprogress))
+            HOME.setProperty('PlaylistCount', str(numitems))
 
 
 def CreateDialogSelect(header):
@@ -408,7 +408,7 @@ def CreateNotification(header="", message="", icon=xbmcgui.NOTIFICATION_INFO, ti
 def GetSortLetters(path, focusedletter):
     listitems = []
     letterlist = []
-    homewindow.clearProperty("LetterList")
+    HOME.clearProperty("LetterList")
     if ADDON.getSetting("FolderPath") == path:
         letterlist = ADDON.getSetting("LetterList")
         letterlist = letterlist.split()
@@ -424,7 +424,7 @@ def GetSortLetters(path, focusedletter):
                         letterlist.append(sortletter)
             ADDON.setSetting("LetterList", " ".join(letterlist))
             ADDON.setSetting("FolderPath", path)
-    homewindow.setProperty("LetterList", "".join(letterlist))
+    HOME.setProperty("LetterList", "".join(letterlist))
     if letterlist and focusedletter:
         startord = ord("A")
         for i in range (0, 26):
@@ -523,16 +523,16 @@ def prettyprint(string):
 def passHomeDataToSkin(data, debug=False):
     if data is not None:
         for (key, value) in data.iteritems():
-            homewindow.setProperty('%s' % (str(key)), unicode(value))
+            HOME.setProperty('%s' % (str(key)), unicode(value))
             if debug:
                 log('%s' % (str(key)) + unicode(value))
 
 
 def passDataToSkin(name, data, prefix="", controlwindow=None, controlnumber=None, handle=None, debug=False):
     if controlnumber is "plugin":
-        homewindow.clearProperty(name)
+        HOME.clearProperty(name)
         if data is not None:
-            homewindow.setProperty(name + ".Count", str(len(data)))
+            HOME.setProperty(name + ".Count", str(len(data)))
             items = CreateListItems(data)
             xbmcplugin.setContent(handle, 'url')
             itemlist = list()
@@ -556,12 +556,12 @@ def SetWindowProperties(name, data, prefix="", debug=False):
             if debug:
                 log("%s%s.%i = %s" % (prefix, name, count + 1, str(result)))
             for (key, value) in result.iteritems():
-                homewindow.setProperty('%s%s.%i.%s' % (prefix, name, count + 1, str(key)), unicode(value))
+                HOME.setProperty('%s%s.%i.%s' % (prefix, name, count + 1, str(key)), unicode(value))
                 if debug:
                     log('%s%s.%i.%s --> ' % (prefix, name, count + 1, str(key)) + unicode(value))
-        homewindow.setProperty('%s%s.Count' % (prefix, name), str(len(data)))
+        HOME.setProperty('%s%s.Count' % (prefix, name), str(len(data)))
     else:
-        homewindow.setProperty('%s%s.Count' % (prefix, name), '0')
+        HOME.setProperty('%s%s.Count' % (prefix, name), '0')
         log("%s%s.Count = None" % (prefix, name))
 
 
