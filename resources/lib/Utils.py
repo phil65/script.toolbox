@@ -174,9 +174,9 @@ def Get_Colors(img):
     width, height = img.size
     pixels = img.load()
     data = []
-    for x in range(width/2):
-        for y in range(height/2):
-            cpixel = pixels[x*2, y*2]
+    for x in range(width / 2):
+        for y in range(height / 2):
+            cpixel = pixels[x * 2, y * 2]
             data.append(cpixel)
     r = 0
     g = 0
@@ -190,9 +190,9 @@ def Get_Colors(img):
             b += data[x][2]
             counter += 1
     if counter > 0:
-        rAvg = int(r/counter)
-        gAvg = int(g/counter)
-        bAvg = int(b/counter)
+        rAvg = int(r / counter)
+        gAvg = int(g / counter)
+        bAvg = int(b / counter)
         Avg = (rAvg + gAvg + bAvg) / 3
         minBrightness = 130
         if Avg < minBrightness:
@@ -426,7 +426,7 @@ def GetSortLetters(path, focusedletter):
     HOME.setProperty("LetterList", "".join(letterlist))
     if letterlist and focusedletter:
         startord = ord("A")
-        for i in range (0, 26):
+        for i in range(0, 26):
             letter = chr(startord + i)
             if letter == focusedletter:
                 label = "[B][COLOR FFFF3333]%s[/COLOR][/B]" % letter
