@@ -5,21 +5,16 @@ import xbmcvfs
 import xbmcplugin
 import os
 import simplejson
-import shutil
 import hashlib
 import urllib
-import time
-try:
-    from PIL import Image, ImageFilter, ImageOps
-    from ImageOperations import MyGaussianBlur
-except:
-    pass
+from PIL import Image, ImageOps
+from ImageOperations import MyGaussianBlur
 
 
-__addon__ = xbmcaddon.Addon()
-__addonid__ = __addon__.getAddonInfo('id')
-__language__ = __addon__.getLocalizedString
-Addon_Data_Path = os.path.join(xbmc.translatePath("special://profile/addon_data/%s" % __addonid__))
+ADDON = xbmcaddon.Addon()
+ADDON_ID = ADDON.getAddonInfo('id')
+ADDON_LANGUAGE = ADDON.getLocalizedString
+Addon_Data_Path = os.path.join(xbmc.translatePath("special://profile/addon_data/%s" % ADDON_ID))
 homewindow = xbmcgui.Window(10000)
 
 
@@ -61,8 +56,8 @@ def AddArtToLibrary(type, media, folder, limit, silent=False):
     if (json_response['result'] is not None) and ('%ss' % (media.lower()) in json_response['result']):
         # iterate through the results
         if not silent:
-            progressDialog = xbmcgui.DialogProgress(__language__(32016))
-            progressDialog.create(__language__(32016))
+            progressDialog = xbmcgui.DialogProgress(ADDON_LANGUAGE(32016))
+            progressDialog.create(ADDON_LANGUAGE(32016))
         for count, item in enumerate(json_response['result']['%ss' % media.lower()]):
             if not silent:
                 if progressDialog.iscanceled():
@@ -73,7 +68,7 @@ def AddArtToLibrary(type, media, folder, limit, silent=False):
                 if i + 1 > limit:
                     break
                 if not silent:
-                    progressDialog.update((count * 100) / json_response['result']['limits']['total'], __language__(32011) + ' %s: %s %i' % (item["label"], type, i + 1))
+                    progressDialog.update((count * 100) / json_response['result']['limits']['total'], ADDON_LANGUAGE(32011) + ' %s: %s %i' % (item["label"], type, i + 1))
                     if progressDialog.iscanceled():
                         return
                 # just in case someone uses backslahes in the path
@@ -102,14 +97,14 @@ def media_path(path):
 def import_skinsettings():
     importstring = read_from_file()
     if importstring:
-        progressDialog = xbmcgui.DialogProgress(__language__(32010))
-        progressDialog.create(__language__(32010))
+        progressDialog = xbmcgui.DialogProgress(ADDON_LANGUAGE(32010))
+        progressDialog.create(ADDON_LANGUAGE(32010))
         xbmc.sleep(200)
         for count, skinsetting in enumerate(importstring):
             if progressDialog.iscanceled():
                 return
             if skinsetting[1].startswith(xbmc.getSkinDir()):
-                progressDialog.update((count * 100) / len(importstring), __language__(32011) + ' %s' % skinsetting[1])
+                progressDialog.update((count * 100) / len(importstring), ADDON_LANGUAGE(32011) + ' %s' % skinsetting[1])
                 setting = skinsetting[1].replace(xbmc.getSkinDir() + ".", "")
                 if skinsetting[0] == "string":
                     if skinsetting[2] is not "":
@@ -122,7 +117,7 @@ def import_skinsettings():
                     else:
                         xbmc.executebuiltin("Skin.Reset(%s)" % setting)
             xbmc.sleep(30)
-        xbmcgui.Dialog().ok(__language__(32005), __language__(32009))
+        xbmcgui.Dialog().ok(ADDON_LANGUAGE(32005), ADDON_LANGUAGE(32009))
     else:
         log("backup not found")
 
@@ -135,7 +130,7 @@ def Filter_Image(filterimage, radius):
     targetfile = os.path.join(Addon_Data_Path, filename)
     cachedthumb = xbmc.getCacheThumbName(filterimage)
     xbmc_vid_cache_file = os.path.join("special://profile/Thumbnails/Video", cachedthumb[0], cachedthumb)
-    xbmc_cache_file = os.path.join("special://profile/Thumbnails/", cachedthumb[0], cachedthumb[:-4] +".jpg")
+    xbmc_cache_file = os.path.join("special://profile/Thumbnails/", cachedthumb[0], cachedthumb[:-4] + ".jpg")
     if filterimage == "":
         return "", ""
     if not xbmcvfs.exists(targetfile):
@@ -173,6 +168,7 @@ def Filter_Image(filterimage, radius):
         img = Image.open(targetfile)
     imagecolor = Get_Colors(img)
     return targetfile, imagecolor
+
 
 def Get_Colors(img):
     width, height = img.size
@@ -219,8 +215,9 @@ def Get_Colors(img):
     log("Average Color: " + imagecolor)
     return imagecolor
 
+
 def image_recolorize(src, black="#000099", white="#99CCFF"):
- #   img = image_recolorize(img, black="#000000", white="#FFFFFF")
+    # img = image_recolorize(img, black="#000000", white="#FFFFFF")
     """
     Returns a recolorized version of the initial image using a two-tone
     approach. The color in the black argument is used to replace black pixels
@@ -230,9 +227,13 @@ def image_recolorize(src, black="#000099", white="#99CCFF"):
     """
     return ImageOps.colorize(ImageOps.grayscale(src), black, white)
 
+
 def save_to_file(content, filename, path=""):
     if path == "":
-        text_file_path = get_browse_dialog() + filename + ".txt"
+        path = get_browse_dialog()
+        if not path:
+            return ""
+        text_file_path = "%s%s.txt" % (path, filename)
     else:
         if not xbmcvfs.exists(path):
             xbmcvfs.mkdir(path)
@@ -242,6 +243,7 @@ def save_to_file(content, filename, path=""):
     simplejson.dump(content, text_file)
     text_file.close()
     return True
+
 
 def read_from_file(path=""):
     if path == "":
@@ -278,9 +280,9 @@ def JumpToLetter(letter):
             jumpsms_id = None
         if jumpsms_id:
             for i in range(1, 5):
-              #  xbmc.executebuiltin("jumpsms" + jumpsms_id)
+                # xbmc.executebuiltin("jumpsms" + jumpsms_id)
                 xbmc.executeJSONRPC('{ "jsonrpc": "2.0", "method": "Input.ExecuteAction", "params": { "action": "jumpsms%s" }, "id": 1 }' % (jumpsms_id))
-           #     prettyprint(response)
+                # prettyprint(response)
                 xbmc.sleep(15)
                 if xbmc.getInfoLabel("ListItem.Sortletter")[0] == letter:
                     break
@@ -303,9 +305,9 @@ def export_skinsettings():
             if skinsetting.attributes['name'].nodeValue.startswith(xbmc.getSkinDir()):
                 newlist.append((skinsetting.attributes['type'].nodeValue, skinsetting.attributes['name'].nodeValue, value))
         if save_to_file(newlist, xbmc.getSkinDir() + ".backup"):
-            xbmcgui.Dialog().ok(__language__(32005), __language__(32006))
+            xbmcgui.Dialog().ok(ADDON_LANGUAGE(32005), ADDON_LANGUAGE(32006))
     else:
-        xbmcgui.Dialog().ok(__language__(32007), __language__(32008))
+        xbmcgui.Dialog().ok(ADDON_LANGUAGE(32007), ADDON_LANGUAGE(32008))
         log("guisettings.xml not found")
 
 
@@ -384,7 +386,7 @@ def CreateDialogYesNo(header="", line1="", nolabel="", yeslabel="", noaction="",
     if noaction == "":
         noaction = xbmc.getInfoLabel("Window.Property(Dialog.no.Builtin)")
     dialog = xbmcgui.Dialog()
-    ret = dialog.yesno(heading=header, line1=line1, nolabel=nolabel, yeslabel=yeslabel)  #autoclose missing
+    ret = dialog.yesno(heading=header, line1=line1, nolabel=nolabel, yeslabel=yeslabel)  # autoclose missing
     if ret:
         for builtin in yesaction.split("|"):
             xbmc.executebuiltin(builtin)
@@ -407,8 +409,8 @@ def GetSortLetters(path, focusedletter):
     listitems = []
     letterlist = []
     homewindow.clearProperty("LetterList")
-    if __addon__.getSetting("FolderPath") == path:
-        letterlist = __addon__.getSetting("LetterList")
+    if ADDON.getSetting("FolderPath") == path:
+        letterlist = ADDON.getSetting("LetterList")
         letterlist = letterlist.split()
     else:
         if path:
@@ -418,14 +420,14 @@ def GetSortLetters(path, focusedletter):
             if "result" in json_response and "files" in json_response["result"]:
                 for movie in json_response["result"]["files"]:
                     sortletter = movie["label"].replace("The ", "")[0]
-                    if not sortletter in letterlist:
+                    if sortletter not in letterlist:
                         letterlist.append(sortletter)
-            __addon__.setSetting("LetterList", " ".join(letterlist))
-            __addon__.setSetting("FolderPath", path)
+            ADDON.setSetting("LetterList", " ".join(letterlist))
+            ADDON.setSetting("FolderPath", path)
     homewindow.setProperty("LetterList", "".join(letterlist))
     if letterlist and focusedletter:
         startord = ord("A")
-        for i in range (0,26):
+        for i in range (0, 26):
             letter = chr(startord + i)
             if letter == focusedletter:
                 label = "[B][COLOR FFFF3333]%s[/COLOR][/B]" % letter
@@ -466,6 +468,7 @@ def GetFavPath(fav):
         path = "ActivateWindow(%s,%s)" % (fav["window"], fav["windowparameter"])
     return path
 
+
 def GetFavourites():
     items = []
     json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Favourites.GetFavourites", "params": {"type": null, "properties": ["path", "thumbnail", "window", "windowparameter"]}, "id": 1}')
@@ -499,7 +502,7 @@ def GetIconPanel(number):
 def log(txt):
     if isinstance(txt, str):
         txt = txt.decode("utf-8")
-    message = u'%s: %s' % (__addonid__, txt)
+    message = u'%s: %s' % (ADDON_ID, txt)
     xbmc.log(msg=message.encode("utf-8"), level=xbmc.LOGDEBUG)
 
 
@@ -548,7 +551,7 @@ def passDataToSkin(name, data, prefix="", controlwindow=None, controlnumber=None
 
 def SetWindowProperties(name, data, prefix="", debug=False):
     if data is not None:
-       # log( "%s%s.Count = %s" % (prefix, name, str(len(data)) ) )
+        # log( "%s%s.Count = %s" % (prefix, name, str(len(data)) ) )
         for (count, result) in enumerate(data):
             if debug:
                 log("%s%s.%i = %s" % (prefix, name, count + 1, str(result)))
@@ -563,9 +566,6 @@ def SetWindowProperties(name, data, prefix="", debug=False):
 
 
 def CreateListItems(data):
-    InfoLabels = ["genre", "year", "episode", "season", "top250", "tracknumber", "year", "plot", "tagline", "originaltitle", "tvshowtitle",
-                  "director", "rating", "studio", "starrating", "country", "percentplayed", "audiochannels", "audiocodec", "videocodec", "videoaspect",
-                  "mpaa", "genre", "premiered", "duration", "folder", "episode", "dbid", "plotoutline", "trailer", "top250", "writer", "watched", "videoresolution"]    # log(str(xbmcgui.getCurrentWindowId()))
     itemlist = []
     if data is not None:
         for (count, result) in enumerate(data):
