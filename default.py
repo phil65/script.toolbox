@@ -73,6 +73,8 @@ class Main:
                 import_skinsettings()
             elif info == 'okdialog':
                 CreateDialogOK(self.header, self.text)
+            elif info == 'builtin':
+                xbmc.executebuiltin(self.id)
             elif info == 'yesnodialog':
                 CreateDialogYesNo(self.header, self.text, self.nolabel, self.yeslabel, self.noaction, self.yesaction)
             elif info == 'notification':
