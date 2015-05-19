@@ -68,7 +68,7 @@ class Main:
             elif info == 'selectdialog':
                 CreateDialogSelect(self.header)
             elif info == 'exportskinsettings':
-                export_skinsettings()
+                export_skinsettings(self.text)
             elif info == 'importskinsettings':
                 import_skinsettings()
             elif info == 'okdialog':

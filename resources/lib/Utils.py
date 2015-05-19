@@ -289,7 +289,7 @@ def JumpToLetter(letter):
         xbmc.executebuiltin("SetFocus(24000)")
 
 
-def export_skinsettings():
+def export_skinsettings(filter):
     guisettings_path = xbmc.translatePath('special://profile/guisettings.xml').decode("utf-8")
     if xbmcvfs.exists(guisettings_path):
         log("guisettings.xml found")
@@ -302,7 +302,8 @@ def export_skinsettings():
             else:
                 value = ""
             if skinsetting.attributes['name'].nodeValue.startswith(xbmc.getSkinDir()):
-                newlist.append((skinsetting.attributes['type'].nodeValue, skinsetting.attributes['name'].nodeValue, value))
+                if not filter or filter in skinsetting.attributes['name'].nodeValue:
+                    newlist.append((skinsetting.attributes['type'].nodeValue, skinsetting.attributes['name'].nodeValue, value))
         if save_to_file(newlist, xbmc.getSkinDir() + ".backup"):
             xbmcgui.Dialog().ok(ADDON_LANGUAGE(32005), ADDON_LANGUAGE(32006))
     else:
