@@ -42,3 +42,6 @@ other calls:
 <onclick>RunScript(script.toolbox,info=exportskinsettings[,text=SOME_TEXT])</onclick> ([,text=SOME_TEXT] optional string filter)
 <onclick>RunScript(script.toolbox,info=importskinsettings)</onclick>
 <onclick>RunScript(script.toolbox,info=blur,id=PATH_TO_IMAGE)</onclick>
+
+
+** This script is also required for some functions of SublimeKodi ( https://github.com/phil65/SublimeKodi ) **
