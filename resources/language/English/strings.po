@@ -1,7 +1,7 @@
 # XBMC Media Center language file
 # Addon Name: Skin.Toolbox
 # Addon id: script.toolbox
-# Addon version: 1.0.0
+# Addon version: 1.0.1
 # Addon Provider: phil65
 msgid ""
 msgstr ""
@@ -18,7 +18,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
 
 msgctxt "Addon Summary"
-msgid "Skin Toolbox"
+msgid "ToolBox Script"
 msgstr ""
 
 msgctxt "Addon Description"
@@ -27,15 +27,15 @@ msgstr ""
 
 
 msgctxt "#32001"
-msgid "Export Skin Settings"
+msgid "Export skin settings"
 msgstr ""
 
 msgctxt "#32002"
-msgid "Import Skin Settings"
+msgid "Import skin settings"
 msgstr ""
 
 msgctxt "#32003"
-msgid "Reset Skin Settings"
+msgid "Reset skin settings"
 msgstr ""
 
 msgctxt "#32004"
