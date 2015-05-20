@@ -289,7 +289,7 @@ def JumpToLetter(letter):
         xbmc.executebuiltin("SetFocus(24000)")
 
 
-def export_skinsettings(filter_label):
+def export_skinsettings(filter_label=False):
     guisettings_path = xbmc.translatePath('special://profile/guisettings.xml').decode("utf-8")
     if xbmcvfs.exists(guisettings_path):
         log("guisettings.xml found")
