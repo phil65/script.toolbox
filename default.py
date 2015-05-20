@@ -226,6 +226,6 @@ class ToolBoxMonitor(xbmc.Monitor):
         # HOME.setProperty(self.prefix + "ImageColor", imagecolor)
 
 
-if (__name__ == "__main__"):
+if __name__ == "__main__":
     Main()
 log('finished')

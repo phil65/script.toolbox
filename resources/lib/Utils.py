@@ -318,10 +318,10 @@ def GetPlaylistStats(path):
     if (".xsp" in path) and ("special://" in path):
         startindex = path.find("special://")
         endindex = path.find(".xsp") + 4
-    elif ("library://" in path):
+    elif "library://" in path:
         startindex = path.find("library://")
         endindex = path.rfind("/") + 1
-    elif ("videodb://" in path):
+    elif "videodb://" in path:
         startindex = path.find("videodb://")
         endindex = path.rfind("/") + 1
     if (startindex > 0) and (endindex > 0):
