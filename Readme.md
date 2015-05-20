@@ -8,7 +8,7 @@ Dialog call examples:
 <onclick>SetProperty(Dialog.2.BuiltIn,BUILTIN)</onclick>
 <onclick>SetProperty(Dialog.3.Label,SOME TEXT)</onclick>
 <onclick>SetProperty(Dialog.3.BuiltIn,BUILTIN)</onclick>
-<onclick>RunScript(script.extendedinfo,info=selectdialog,header=SOME_TEXT)</onclick>
+<onclick>RunScript(script.toolbox,info=selectdialog,header=SOME_TEXT)</onclick>
 
 
 - DialogYesNo
@@ -33,7 +33,7 @@ Dialog call examples:
 
 Notes:
 - use "|" to append several builtins
-- escape stuff like '"$INFO[xxx]"'
+- escape stuff in following form: '"$INFO[xxx]"'
 
 
 
