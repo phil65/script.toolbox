@@ -1,5 +1,5 @@
 # XBMC Media Center language file
-# Addon Name: Skin.Toolbox
+# Addon Name: ToolBox Script
 # Addon id: script.toolbox
 # Addon version: 1.0.1
 # Addon Provider: phil65
