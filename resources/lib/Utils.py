@@ -363,6 +363,7 @@ def CreateDialogSelect(header):
             value = xbmc.getInfoLabel("Window.Property(Dialog.%i.Builtin)" % (indexlist[index]))
             for builtin in value.split("||"):
                 xbmc.executebuiltin(builtin)
+                xbmc.sleep(30)
     for i in range(1, 20):
         xbmc.executebuiltin("ClearProperty(Dialog.%i.Builtin)" % (i))
         xbmc.executebuiltin("ClearProperty(Dialog.%i.Label)" % (i))
@@ -389,11 +390,13 @@ def CreateDialogYesNo(header="", line1="", nolabel="", yeslabel="", noaction="",
     dialog = xbmcgui.Dialog()
     ret = dialog.yesno(heading=header, line1=line1, nolabel=nolabel, yeslabel=yeslabel)  # autoclose missing
     if ret:
-        for builtin in yesaction.split("|"):
+        for builtin in yesaction.split("||"):
             xbmc.executebuiltin(builtin)
+            xbmc.sleep(30)
     else:
-        for builtin in noaction.split("|"):
+        for builtin in noaction.split("||"):
             xbmc.executebuiltin(builtin)
+            xbmc.sleep(30)
     xbmc.executebuiltin("ClearProperty(Dialog.yes.Label")
     xbmc.executebuiltin("ClearProperty(Dialog.no.Label")
     xbmc.executebuiltin("ClearProperty(Dialog.yes.Builtin")
