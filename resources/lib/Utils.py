@@ -312,40 +312,6 @@ def export_skinsettings(filter_label=False):
         log("guisettings.xml not found")
 
 
-def GetPlaylistStats(path):
-    startindex = -1
-    endindex = -1
-    if (".xsp" in path) and ("special://" in path):
-        startindex = path.find("special://")
-        endindex = path.find(".xsp") + 4
-    elif "library://" in path:
-        startindex = path.find("library://")
-        endindex = path.rfind("/") + 1
-    elif "videodb://" in path:
-        startindex = path.find("videodb://")
-        endindex = path.rfind("/") + 1
-    if (startindex > 0) and (endindex > 0):
-        playlistpath = path[startindex:endindex]
-    #   json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {"filter": {"field": "path", "operator": "contains", "value": "%s"}, "properties": ["playcount", "resume"]}, "id": 1}' % (playlistpath))
-        json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "video", "properties": ["playcount", "resume"]}, "id": 1}' % (playlistpath))
-        json_query = unicode(json_query, 'utf-8', errors='ignore')
-        json_response = simplejson.loads(json_query)
-        if "result" in json_response:
-            played = 0
-            inprogress = 0
-            numitems = json_response["result"]["limits"]["total"]
-            for item in json_response["result"]["files"]:
-                if "playcount" in item:
-                    if item["playcount"] > 0:
-                        played += 1
-                    if item["resume"]["position"] > 0:
-                        inprogress += 1
-            HOME.setProperty('PlaylistWatched', str(played))
-            HOME.setProperty('PlaylistUnWatched', str(numitems - played))
-            HOME.setProperty('PlaylistInProgress', str(inprogress))
-            HOME.setProperty('PlaylistCount', str(numitems))
-
-
 def CreateDialogSelect(header):
     selectionlist = []
     indexlist = []
@@ -378,11 +344,11 @@ def CreateDialogYesNo(header="", line1="", nolabel="", yeslabel="", noaction="",
     if yeslabel == "":
         yeslabel = xbmc.getInfoLabel("Window.Property(Dialog.yes.Label)")
         if yeslabel == "":
-            yeslabel = "yes"
+            yeslabel = xbmc.getLocalizedString(107)
     if nolabel == "":
         nolabel = xbmc.getInfoLabel("Window.Property(Dialog.no.Label)")
         if nolabel == "":
-            nolabel = "no"
+            nolabel = xbmc.getLocalizedString(106)
     if yesaction == "":
         yesaction = xbmc.getInfoLabel("Window.Property(Dialog.yes.Builtin)")
     if noaction == "":
@@ -404,7 +370,11 @@ def CreateDialogYesNo(header="", line1="", nolabel="", yeslabel="", noaction="",
     return ret
 
 
-def CreateNotification(header="", message="", icon=xbmcgui.NOTIFICATION_INFO, time=5000, sound=True):
+def CreateNotification(header="", message="", icon=None, time=5000, sound=True):
+    if sound in ["False", "false"]:
+        sound = False
+    else:
+        sound = True
     dialog = xbmcgui.Dialog()
     dialog.notification(heading=header, message=message, icon=icon, time=time, sound=sound)
 
@@ -442,16 +412,6 @@ def GetSortLetters(path, focusedletter):
             listitem = {"label": label}
             listitems.append(listitem)
     return listitems
-
-
-def create_channel_list():
-    json_response = xbmc.executeJSONRPC('{"jsonrpc":"2.0","id":1,"method":"PVR.GetChannels","params":{"channelgroupid":"alltv", "properties": [ "thumbnail", "locked", "hidden", "channel", "lastplayed" ]}}')
-    json_response = unicode(json_response, 'utf-8', errors='ignore')
-    json_response = simplejson.loads(json_response)
-    if ('result' in json_response) and ("movies" in json_response["result"]):
-        return json_response
-    else:
-        return False
 
 
 def GetFavouriteswithType(favtype):
@@ -532,24 +492,9 @@ def passHomeDataToSkin(data, debug=False):
                 log('%s' % (str(key)) + unicode(value))
 
 
-def passDataToSkin(name, data, prefix="", controlwindow=None, controlnumber=None, handle=None, debug=False):
-    if controlnumber is "plugin":
-        HOME.clearProperty(name)
-        if data is not None:
-            HOME.setProperty(name + ".Count", str(len(data)))
-            items = CreateListItems(data)
-            xbmcplugin.setContent(handle, 'url')
-            itemlist = list()
-            for item in items:
-                itemlist.append((item.getProperty("path"), item, False))
-            xbmcplugin.addDirectoryItems(handle, itemlist, False)
-    elif controlnumber is not None:
-        log("creatin listitems for list with id " + str(controlnumber))
-        xbmc.sleep(200)
-        itemlist = controlwindow.getControl(controlnumber)
-        items = CreateListItems(data)
-        itemlist.addItems(items)
-    else:
+def passDataToSkin(name, data, prefix="", debug=False):
+        if prefix and not prefix.endswith("."):
+            prefix += "."
         SetWindowProperties(name, data, prefix, debug)
 
 
@@ -567,62 +512,6 @@ def SetWindowProperties(name, data, prefix="", debug=False):
     else:
         HOME.setProperty('%s%s.Count' % (prefix, name), '0')
         log("%s%s.Count = None" % (prefix, name))
-
-
-def CreateListItems(data=None, preload_images=0):
-    Int_InfoLabels = ["year", "episode", "season", "top250", "tracknumber", "playcount", "overlay"]
-    Float_InfoLabels = ["rating"]
-    String_InfoLabels = ["genre", "director", "mpaa", "plot", "plotoutline", "title", "originaltitle", "sorttitle", "duration", "studio", "tagline", "writer",
-                         "tvshowtitle", "premiered", "status", "code", "aired", "credits", "lastplayed", "album", "votes", "trailer", "dateadded"]
-    itemlist = []
-    if data is not None:
-        # threads = []
-        # image_requests = []
-        for (count, result) in enumerate(data):
-            listitem = xbmcgui.ListItem('%s' % (str(count)))
-            itempath = ""
-            counter = 1
-            for (key, value) in result.iteritems():
-                if not value:
-                    continue
-                value = unicode(value)
-                # if counter <= preload_images:
-                #     if value.startswith("http://") and (value.endswith(".jpg") or value.endswith(".png")):
-                #         if value not in image_requests:
-                #             thread = Get_File_Thread(value)
-                #             threads += [thread]
-                #             thread.start()
-                #             image_requests.append(value)
-                if key.lower() in ["name", "label", "title"]:
-                    listitem.setLabel(value)
-                elif key.lower() in ["thumb"]:
-                    listitem.setThumbnailImage(value)
-                elif key.lower() in ["icon"]:
-                    listitem.setIconImage(value)
-                elif key.lower() in ["path"]:
-                    itempath = value
-                if key.lower() in ["thumb", "poster", "banner", "fanart", "clearart", "clearlogo", "landscape", "discart", "characterart", "tvshow.fanart", "tvshow.poster", "tvshow.banner", "tvshow.clearart", "tvshow.characterart"]:
-                    listitem.setArt({key.lower(): value})
-                if key.lower() in Int_InfoLabels:
-                    try:
-                        listitem.setInfo('video', {key.lower(): int(value)})
-                    except:
-                        pass
-                if key.lower() in String_InfoLabels:
-                    listitem.setInfo('video', {key.lower(): value})
-                if key.lower() in Float_InfoLabels:
-                    try:
-                        listitem.setInfo('video', {key.lower(): "%1.1f" % float(value)})
-                    except:
-                        pass
-                listitem.setProperty('%s' % (key), value)
-            listitem.setPath(path=itempath)
-            listitem.setProperty("index", str(counter))
-            itemlist.append(listitem)
-            counter += 1
-        # for x in threads:
-        #     x.join()
-    return itemlist
 
 
 
