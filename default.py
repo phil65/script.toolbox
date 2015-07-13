@@ -78,6 +78,8 @@ class Main:
             elif info == 'textviewer':
                 w = TextViewer_Dialog('DialogTextViewer.xml', ADDON_PATH, header=params.get("header"), text=params.get("text"))
                 w.doModal()
+            elif info == "infopanel":
+                open_info_panel()
             elif info == "sortletters":
                 listitems = GetSortLetters(self.path, params.get("id", ""))
                 passDataToSkin('SortLetters', listitems, params.get("prefix", ""), self.window)
@@ -104,11 +106,11 @@ class Main:
         for arg in args:
             if arg == 'script.toolbox':
                 continue
-            if param.startswith('info='):
-                self.infos.append(param[5:])
+            if arg.startswith('info='):
+                self.infos.append(arg[5:])
             else:
                 try:
-                    self.params[param.split("=")[0].lower()] = "=".join(param.split("=")[1:]).strip()
+                    self.params[arg.split("=")[0].lower()] = "=".join(arg.split("=")[1:]).strip()
                 except:
                     pass
 

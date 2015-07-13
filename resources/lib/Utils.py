@@ -16,6 +16,7 @@ ADDON_ID = ADDON.getAddonInfo('id')
 ADDON_LANGUAGE = ADDON.getLocalizedString
 ADDON_DATA_PATH = os.path.join(xbmc.translatePath("special://profile/addon_data/%s" % ADDON_ID))
 HOME = xbmcgui.Window(10000)
+SKINSETTINGS = xbmcgui.Window(10035)
 
 
 class TextViewer_Dialog(xbmcgui.WindowXMLDialog):
@@ -47,6 +48,21 @@ def RemoveQuotes(label):
         if label.startswith('"') and label.endswith('"') and len(label) > 2:
             label = label[1:-1]
     return label
+
+
+def open_info_panel():
+    listitems = ["Slot %i" % i for i in range(1, 20)]
+    select_dialog = xbmcgui.Dialog()
+    index = select_dialog.select("Choose Info Panel", listitems)
+    if index == -1:
+        return None
+    HOME.setProperty("AllowedStyles", "_1_6_")
+    SKINSETTINGS.setProperty("CustomYesNoDialog", "Icon%i" % index)
+    prefix = xbmc.getInfoLabel("Window(skinsettings).Property(WidgetTargetPrefix)")
+    selection = xbmc.getInfoLabel("Window(skinsettings).Property(WidgetSelection)")
+    xbmc.executebuiltin("Skin.SetString(%s.%sTitle,InfoPanel %i)" % (prefix, selection, index))
+    xbmc.executebuiltin("Skin.SetString(%s.%sContent,plugin://script.extendedinfo?info=iconpanel&&id=%i)" % (prefix, selection, index))
+    xbmc.executebuiltin("ActivateWindow(1137)")
 
 
 def AddArtToLibrary(type, media, folder, limit, silent=False):
