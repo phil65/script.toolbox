@@ -67,6 +67,12 @@ class Main:
                 export_skinsettings(params.get("text"))
             elif info == 'importskinsettings':
                 import_skinsettings()
+            elif info == 'extrathumbmovie' :
+                AddArtToLibrary("extrathumb", "Movie", "extrathumbs", EXTRATHUMB_LIMIT)
+            elif info == 'extrafanartmovie' :
+                AddArtToLibrary("extrafanart", "Movie", "extrafanart", EXTRAFANART_LIMIT)
+            elif info == 'extrafanarttvshow' :
+                AddArtToLibrary("extrafanart", "TVShow", "extrafanart", EXTRAFANART_LIMIT)
             elif info == 'okdialog':
                 CreateDialogOK(params.get("header"), params.get("text"))
             elif info == 'builtin':
