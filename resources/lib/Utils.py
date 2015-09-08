@@ -111,31 +111,51 @@ def media_path(path):
 
 
 def import_skinsettings():
-    importstring = read_from_file()
-    if importstring:
-        progressDialog = xbmcgui.DialogProgress(ADDON_LANGUAGE(32010))
-        progressDialog.create(ADDON_LANGUAGE(32010))
-        xbmc.sleep(200)
-        for count, skinsetting in enumerate(importstring):
-            if progressDialog.iscanceled():
-                return
-            if skinsetting[1].startswith(xbmc.getSkinDir()):
-                progressDialog.update((count * 100) / len(importstring), ADDON_LANGUAGE(32011) + ' %s' % skinsetting[1])
-                setting = skinsetting[1].replace(xbmc.getSkinDir() + ".", "")
-                if skinsetting[0] == "string":
-                    if skinsetting[2] is not "":
-                        xbmc.executebuiltin("Skin.SetString(%s,%s)" % (setting, skinsetting[2]))
-                    else:
-                        xbmc.executebuiltin("Skin.Reset(%s)" % setting)
-                elif skinsetting[0] == "bool":
-                    if skinsetting[2] == "true":
-                        xbmc.executebuiltin("Skin.SetBool(%s)" % setting)
-                    else:
-                        xbmc.executebuiltin("Skin.Reset(%s)" % setting)
-            xbmc.sleep(30)
-        xbmcgui.Dialog().ok(ADDON_LANGUAGE(32005), ADDON_LANGUAGE(32009))
-    else:
+    data = read_from_file()
+    if not data:
         log("backup not found")
+    progressDialog = xbmcgui.DialogProgress(ADDON_LANGUAGE(32010))
+    progressDialog.create(ADDON_LANGUAGE(32010))
+    xbmc.sleep(200)
+    for count, skinsetting in enumerate(data):
+        if progressDialog.iscanceled():
+            return
+        if skinsetting[1].startswith(xbmc.getSkinDir()):
+            progressDialog.update((count * 100) / len(data), ADDON_LANGUAGE(32011) + ' %s' % skinsetting[1])
+            setting = skinsetting[1].replace(xbmc.getSkinDir() + ".", "")
+            if skinsetting[0] == "string":
+                if skinsetting[2] is not "":
+                    xbmc.executebuiltin("Skin.SetString(%s,%s)" % (setting, skinsetting[2]))
+                else:
+                    xbmc.executebuiltin("Skin.Reset(%s)" % setting)
+            elif skinsetting[0] == "bool":
+                if skinsetting[2]:
+                    xbmc.executebuiltin("Skin.SetBool(%s)" % setting)
+                else:
+                    xbmc.executebuiltin("Skin.Reset(%s)" % setting)
+        xbmc.sleep(30)
+    xbmcgui.Dialog().ok(ADDON_LANGUAGE(32005), ADDON_LANGUAGE(32009))
+
+
+def export_skinsettings(filter_label=False):
+    s_path = xbmc.translatePath('special://profile/addon_data/%s/settings.xml' % xbmc.getSkinDir()).decode("utf-8")
+    if not xbmcvfs.exists(s_path):
+        xbmcgui.Dialog().ok(ADDON_LANGUAGE(32007), ADDON_LANGUAGE(32008))
+        log("guisettings.xml not found")
+        return None
+    log("guisettings.xml found")
+    ls = []
+    for count, skinsetting in enumerate(parse(s_path).documentElement.getElementsByTagName('setting')):
+        s_id = skinsetting.attributes['id'].nodeValue
+        s_type = skinsetting.attributes['type'].nodeValue
+        if s_type == "string":
+            s_value = xbmc.getInfoLabel("Skin.String(%s)" % s_id)
+        else:
+            s_value = bool(xbmc.getCondVisibility("Skin.HasSetting(%s)" % s_id))
+        if not filter_label or filter_label in s_id:
+            ls.append((s_type, s_id, s_value))
+    if save_to_file(ls, xbmc.getSkinDir() + ".backup"):
+        xbmcgui.Dialog().ok(ADDON_LANGUAGE(32005), ADDON_LANGUAGE(32006))
 
 
 def Filter_Image(filterimage, radius):
@@ -303,30 +323,6 @@ def JumpToLetter(letter):
                 if xbmc.getInfoLabel("ListItem.Sortletter")[0] == letter:
                     break
         xbmc.executebuiltin("SetFocus(24000)")
-
-
-def export_skinsettings(filter_label=False):
-    guisettings_path = xbmc.translatePath('special://profile/guisettings.xml').decode("utf-8")
-    if xbmcvfs.exists(guisettings_path):
-        log("guisettings.xml found")
-        doc = parse(guisettings_path)
-        skinsettings = doc.documentElement.getElementsByTagName('setting')
-        newlist = []
-        for count, skinsetting in enumerate(skinsettings):
-            if skinsetting.childNodes:
-                value = skinsetting.childNodes[0].nodeValue
-            else:
-                value = ""
-            setting_name = skinsetting.attributes['name'].nodeValue
-            if setting_name.startswith(xbmc.getSkinDir()):
-                if not filter_label or filter_label in setting_name:
-                    newlist.append((skinsetting.attributes['type'].nodeValue, setting_name, value))
-        if save_to_file(newlist, xbmc.getSkinDir() + ".backup"):
-            xbmcgui.Dialog().ok(ADDON_LANGUAGE(32005), ADDON_LANGUAGE(32006))
-    else:
-        xbmcgui.Dialog().ok(ADDON_LANGUAGE(32007), ADDON_LANGUAGE(32008))
-        log("guisettings.xml not found")
-
 
 def CreateDialogSelect(header):
     selectionlist = []
