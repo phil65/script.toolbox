@@ -67,11 +67,11 @@ class Main:
                 export_skinsettings(params.get("text"))
             elif info == 'importskinsettings':
                 import_skinsettings()
-            elif info == 'extrathumbmovie' :
+            elif info == 'extrathumbmovie':
                 AddArtToLibrary("extrathumb", "Movie", "extrathumbs", EXTRATHUMB_LIMIT)
-            elif info == 'extrafanartmovie' :
+            elif info == 'extrafanartmovie':
                 AddArtToLibrary("extrafanart", "Movie", "extrafanart", EXTRAFANART_LIMIT)
-            elif info == 'extrafanarttvshow' :
+            elif info == 'extrafanarttvshow':
                 AddArtToLibrary("extrafanart", "TVShow", "extrafanart", EXTRAFANART_LIMIT)
             elif info == 'okdialog':
                 CreateDialogOK(params.get("header"), params.get("text"))
@@ -82,8 +82,8 @@ class Main:
             elif info == 'notification':
                 CreateNotification(params.get("header"), params.get("text"), params.get("icon", xbmcgui.NOTIFICATION_INFO), int(params.get("time", 5000)), params.get("sound", True))
             elif info == 'textviewer':
-                w = TextViewer_Dialog('DialogTextViewer.xml', ADDON_PATH, header=params.get("header"), text=params.get("text"))
-                w.doModal()
+                xbmcgui.Dialog().textviewer(heading=params.get("header"),
+                                            text=params.get("text"))
             elif info == "infopanel":
                 open_info_panel()
             elif info == "sortletters":
@@ -104,7 +104,6 @@ class Main:
         self.image_now = ""
         self.image_prev = ""
         self.params = {}
-
 
     def _parse_argv(self):
         args = sys.argv

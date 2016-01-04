@@ -2,7 +2,6 @@ import xbmc
 import xbmcaddon
 import xbmcgui
 import xbmcvfs
-import xbmcplugin
 import os
 import simplejson
 import hashlib
@@ -19,30 +18,7 @@ HOME = xbmcgui.Window(10000)
 SKINSETTINGS = xbmcgui.Window(10035)
 
 
-class TextViewer_Dialog(xbmcgui.WindowXMLDialog):
-    ACTION_PREVIOUS_MENU = [9, 92, 10]
-
-    def __init__(self, *args, **kwargs):
-        xbmcgui.WindowXMLDialog.__init__(self)
-        self.text = kwargs.get('text')
-        self.header = kwargs.get('header')
-
-    def onInit(self):
-        self.getControl(1).setLabel(self.header)
-        self.getControl(5).setText(self.text)
-
-    def onAction(self, action):
-        if action in self.ACTION_PREVIOUS_MENU:
-            self.close()
-
-    def onClick(self, controlID):
-        pass
-
-    def onFocus(self, controlID):
-        pass
-
-
-def RemoveQuotes(label):
+def remove_quotes(label):
     if label.startswith("'") and label.endswith("'") and len(label) > 2:
         label = label[1:-1]
         if label.startswith('"') and label.endswith('"') and len(label) > 2:
@@ -87,8 +63,6 @@ def AddArtToLibrary(type, media, folder, limit, silent=False):
                     progressDialog.update((count * 100) / json_response['result']['limits']['total'], ADDON_LANGUAGE(32011) + ' %s: %s %i' % (item["label"], type, i + 1))
                     if progressDialog.iscanceled():
                         return
-                # just in case someone uses backslahes in the path
-                # fixes problems mentioned on some german forum
                 file_path = os.path.join(path, file).encode('string-escape')
                 if xbmcvfs.exists(file_path) and item['art'].get('%s%i' % (type, i), '') == "":
                     xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.Set%sDetails", "params": { "%sid": %i, "art": { "%s%i": "%s" }}, "id": 1 }' %
@@ -141,9 +115,9 @@ def export_skinsettings(filter_label=False):
     s_path = xbmc.translatePath('special://profile/addon_data/%s/settings.xml' % xbmc.getSkinDir()).decode("utf-8")
     if not xbmcvfs.exists(s_path):
         xbmcgui.Dialog().ok(ADDON_LANGUAGE(32007), ADDON_LANGUAGE(32008))
-        log("guisettings.xml not found")
+        log("settings.xml not found")
         return None
-    log("guisettings.xml found")
+    log("settings.xml found")
     ls = []
     for count, skinsetting in enumerate(parse(s_path).documentElement.getElementsByTagName('setting')):
         s_id = skinsetting.attributes['id'].nodeValue
@@ -323,6 +297,7 @@ def JumpToLetter(letter):
                 if xbmc.getInfoLabel("ListItem.Sortletter")[0] == letter:
                     break
         xbmc.executebuiltin("SetFocus(24000)")
+
 
 def CreateDialogSelect(header):
     selectionlist = []
