@@ -80,8 +80,8 @@ class Main:
             elif info == 'notification':
                 CreateNotification(params.get("header"), params.get("text"), params.get("icon", xbmcgui.NOTIFICATION_INFO), int(params.get("time", 5000)), params.get("sound", True))
             elif info == 'textviewer':
-                xbmcgui.Dialog().textviewer(heading=params.get("header"),
-                                            text=params.get("text"))
+                xbmcgui.Dialog().textviewer(heading=xbmc.getInfoLabel("Window.Property(TextViewer.header)"),
+                                            text=xbmc.getInfoLabel("Window.Property(TextViewer.Text)")
             elif info == "infopanel":
                 open_info_panel()
             elif info == "sortletters":
