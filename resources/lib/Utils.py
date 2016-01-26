@@ -7,7 +7,7 @@ import simplejson
 import hashlib
 import urllib
 from PIL import Image, ImageOps
-from ImageOperations import MyGaussianBlur
+from resources.lib.ImageOperations import MyGaussianBlur
 from xml.dom.minidom import parse
 
 ADDON = xbmcaddon.Addon()

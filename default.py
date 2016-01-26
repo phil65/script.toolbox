@@ -1,8 +1,9 @@
 import sys
-import os
 import xbmc
 import xbmcgui
 import xbmcaddon
+
+from resources.lib.Utils import *
 
 ADDON = xbmcaddon.Addon()
 ADDON_VERSION = ADDON.getAddonInfo('version')
@@ -11,9 +12,6 @@ ADDON_PATH = ADDON.getAddonInfo('path').decode("utf-8")
 EXTRAFANART_LIMIT = 4
 EXTRATHUMB_LIMIT = 4
 HOME = xbmcgui.Window(10000)
-sys.path.append(xbmc.translatePath(os.path.join(ADDON_PATH, 'resources', 'lib')))
-
-from Utils import *
 
 
 class Main:
