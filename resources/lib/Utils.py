@@ -19,6 +19,8 @@ SKINSETTINGS = xbmcgui.Window(10035)
 
 
 def remove_quotes(label):
+    if not label:
+        return ""
     if label.startswith("'") and label.endswith("'") and len(label) > 2:
         label = label[1:-1]
         if label.startswith('"') and label.endswith('"') and len(label) > 2:
