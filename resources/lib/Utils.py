@@ -360,10 +360,7 @@ def CreateDialogYesNo(header="", line1="", nolabel="", yeslabel="", noaction="",
 
 
 def CreateNotification(header="", message="", icon=None, time=5000, sound=True):
-    if sound in ["False", "false"]:
-        sound = False
-    else:
-        sound = True
+    sound = sound not in ["False", "false"]
     dialog = xbmcgui.Dialog()
     dialog.notification(heading=header, message=message, icon=icon, time=time, sound=sound)
 
@@ -436,19 +433,6 @@ def GetFavourites():
                        'Builtin': path,
                        'Path': "plugin://script.extendedinfo/?info=action&&id=" + path}
             items.append(newitem)
-    return items
-
-
-def GetIconPanel(number):
-    items = []
-    offset = number * 5 - 5
-    for i in range(1, 6):
-        newitem = {'Label': xbmc.getInfoLabel("Skin.String(IconPanelItem" + str(i + offset) + ".Label)").decode("utf-8"),
-                   'Path': "plugin://script.extendedinfo/?info=action&&id=" + xbmc.getInfoLabel("Skin.String(IconPanelItem" + str(i + offset) + ".Path)").decode("utf-8"),
-                   'Thumb': xbmc.getInfoLabel("Skin.String(IconPanelItem" + str(i + offset) + ".Icon)").decode("utf-8"),
-                   'ID': "IconPanelitem" + str(i + offset).decode("utf-8"),
-                   'Type': xbmc.getInfoLabel("Skin.String(IconPanelItem" + str(i + offset) + ".Type)").decode("utf-8")}
-        items.append(newitem)
     return items
 
 
