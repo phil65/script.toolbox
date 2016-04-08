@@ -113,7 +113,7 @@ class Main:
                 self.infos.append(arg[5:])
             else:
                 try:
-                    self.params[arg.split("=")[0].lower()] = "=".join(arg.split("=")[1:]).strip()
+                    self.params[arg.split("=")[0].lower()] = "=".join(arg.split("=")[1:])
                 except:
                     pass
 
