@@ -51,8 +51,8 @@ class Main:
             elif info == 'playsong':
                 xbmc.executeJSONRPC('{ "jsonrpc": "2.0", "method": "Player.Open", "params": { "item": { "songid": %i } }, "id": 1 }' % int(params["dbid"]))
             elif info == 'favourites':
-                if params.get("id", ""):
-                    favourites = GetFavouriteswithType(params.get("id", ""))
+                if params.get("id"):
+                    favourites = GetFavouriteswithType(params["id"])
                 else:
                     favourites = GetFavourites()
                     HOME.setProperty('favourite.count', str(len(favourites)))
