@@ -135,51 +135,54 @@ def export_skinsettings(filter_label=False):
 
 
 def Filter_Image(filterimage, radius):
-    if not xbmcvfs.exists(ADDON_DATA_PATH):
-        xbmcvfs.mkdir(ADDON_DATA_PATH)
-    md5 = hashlib.md5(filterimage).hexdigest()
-    filename = md5 + str(radius) + ".png"
-    targetfile = os.path.join(ADDON_DATA_PATH, filename)
-    cachedthumb = xbmc.getCacheThumbName(filterimage)
-    xbmc_vid_cache_file = os.path.join("special://profile/Thumbnails/Video", cachedthumb[0], cachedthumb)
-    xbmc_cache_file = os.path.join("special://profile/Thumbnails/", cachedthumb[0], cachedthumb[:-4] + ".jpg")
-    if filterimage == "":
-        return "", ""
-    if not xbmcvfs.exists(targetfile):
-        img = None
-        for i in range(1, 4):
-            try:
-                if xbmcvfs.exists(xbmc_cache_file):
-                    log("image already in xbmc cache: " + xbmc_cache_file)
-                    img = Image.open(xbmc.translatePath(xbmc_cache_file))
-                    break
-                elif xbmcvfs.exists(xbmc_vid_cache_file):
-                    log("image already in xbmc video cache: " + xbmc_vid_cache_file)
-                    img = Image.open(xbmc.translatePath(xbmc_vid_cache_file))
-                    break
-                else:
-                    filterimage = urllib.unquote(filterimage.replace("image://", "")).decode('utf8')
-                    if filterimage.endswith("/"):
-                        filterimage = filterimage[:-1]
-                    log("copy image from source: " + filterimage)
-                    xbmcvfs.copy(filterimage, targetfile)
-                    img = Image.open(targetfile)
-                    break
-            except:
-                log("Could not get image for %s (try %i)" % (filterimage, i))
-                xbmc.sleep(500)
-        if not img:
+    try:
+        if not xbmcvfs.exists(ADDON_DATA_PATH):
+            xbmcvfs.mkdir(ADDON_DATA_PATH)
+        md5 = hashlib.md5(filterimage).hexdigest()
+        filename = md5 + str(radius) + ".png"
+        targetfile = os.path.join(ADDON_DATA_PATH, filename)
+        cachedthumb = xbmc.getCacheThumbName(filterimage)
+        xbmc_vid_cache_file = os.path.join("special://profile/Thumbnails/Video", cachedthumb[0], cachedthumb)
+        xbmc_cache_file = os.path.join("special://profile/Thumbnails/", cachedthumb[0], cachedthumb[:-4] + ".jpg")
+        if filterimage == "":
             return "", ""
-        img.thumbnail((200, 200), Image.ANTIALIAS)
-        img = img.convert('RGB')
-        imgfilter = MyGaussianBlur(radius=radius)
-        img = img.filter(imgfilter)
-        img.save(targetfile)
-    else:
-        log("blurred img already created: " + targetfile)
-        img = Image.open(targetfile)
-    imagecolor = Get_Colors(img)
-    return targetfile, imagecolor
+        if not xbmcvfs.exists(targetfile):
+            img = None
+            for i in range(1, 4):
+                try:
+                    if xbmcvfs.exists(xbmc_cache_file):
+                        log("image already in xbmc cache: " + xbmc_cache_file)
+                        img = Image.open(xbmc.translatePath(xbmc_cache_file))
+                        break
+                    elif xbmcvfs.exists(xbmc_vid_cache_file):
+                        log("image already in xbmc video cache: " + xbmc_vid_cache_file)
+                        img = Image.open(xbmc.translatePath(xbmc_vid_cache_file))
+                        break
+                    else:
+                        filterimage = urllib.unquote(filterimage.replace("image://", "")).decode('utf8')
+                        if filterimage.endswith("/"):
+                            filterimage = filterimage[:-1]
+                        log("copy image from source: " + filterimage)
+                        xbmcvfs.copy(filterimage, targetfile)
+                        img = Image.open(targetfile)
+                        break
+                except:
+                    log("Could not get image for %s (try %i)" % (filterimage, i))
+                    xbmc.sleep(500)
+            if not img:
+                return "", ""
+            img.thumbnail((200, 200), Image.ANTIALIAS)
+            img = img.convert('RGB')
+            imgfilter = MyGaussianBlur(radius=radius)
+            img = img.filter(imgfilter)
+            img.save(targetfile)
+        else:
+            log("blurred img already created: " + targetfile)
+            img = Image.open(targetfile)
+        imagecolor = Get_Colors(img)
+        return targetfile, imagecolor
+    except:
+        return "", ""
 
 
 def Get_Colors(img):
